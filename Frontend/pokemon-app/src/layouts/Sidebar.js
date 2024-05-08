@@ -10,12 +10,12 @@ const navigation = [
   },
   {
     title: "I tuoi pokemon",
-    href: "/cards",
+    href: "/cards2",
     icon: "bi bi-box",
   },
   {
     title: "Scegli i pokemon",
-    href: "/badges",
+    href: "/cards",
     icon: "bi bi-cart",
   },
   {

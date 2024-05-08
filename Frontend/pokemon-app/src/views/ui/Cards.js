@@ -1,3 +1,4 @@
+//Pagina di Tiziano
 import {
   Card,
   CardImg,
@@ -64,7 +65,7 @@ const Cards = () => {
       {/* --------------------------------------------------------------------------------*/}
       {/* Card-1*/}
       {/* --------------------------------------------------------------------------------*/}
-      <h5 className="mb-3">Basic Card</h5>
+      <h5 className="mb-3">I Tuoi Pokemon</h5>
       <Row>
         {BlogData.map((blg, index) => (
           <Col sm="6" lg="6" xl="3" key={index}>
@@ -78,13 +79,16 @@ const Cards = () => {
           </Col>
         ))}
       </Row>
+
+
+
       {/* --------------------------------------------------------------------------------*/}
       {/* Card-2*/}
       {/* --------------------------------------------------------------------------------*/}
 
 
 
-      <Row>
+      {/* <Row>
         <h5 className="mb-3 mt-3">Alignment Text</h5>
         <Col md="6" lg="4">
           <Card body>
@@ -122,14 +126,14 @@ const Cards = () => {
             </div>
           </Card>
         </Col>
-      </Row>
+      </Row> */}
       {/* --------------------------------------------------------------------------------*/}
       {/* Card-2*/}
       {/* --------------------------------------------------------------------------------*/}
 
 
-      
-      <Row>
+
+      {/* <Row>
         <h5 className="mb-3 mt-3">Colored Card</h5>
         <Col md="6" lg="3">
           <Card body color="primary" inverse>
@@ -227,61 +231,7 @@ const Cards = () => {
             </div>
           </Card>
         </Col>
-      </Row>
-      {/* --------------------------------------------------------------------------------*/}
-      {/* Card-Group*/}
-      {/* --------------------------------------------------------------------------------*/}
-      <Row>
-        <h5 className="mb-3 mt-3">Card Group</h5>
-        <Col>
-          <CardGroup>
-            <Card>
-              <CardImg alt="Card image cap" src={"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png"} top width="100%" />
-              <CardBody>
-                <CardTitle tag="h5">Card title</CardTitle>
-                <CardSubtitle className="mb-2 text-muted" tag="h6">
-                  Card subtitle
-                </CardSubtitle>
-                <CardText>
-                  This is a wider card with supporting text below as a natural
-                  lead-in to additional content. This content is a little bit
-                  longer.
-                </CardText>
-                <Button>Button</Button>
-              </CardBody>
-            </Card>
-            <Card>
-              <CardImg alt="Card image cap" src={bg2} top width="100%" />
-              <CardBody>
-                <CardTitle tag="h5">Card title</CardTitle>
-                <CardSubtitle className="mb-2 text-muted" tag="h6">
-                  Card subtitle
-                </CardSubtitle>
-                <CardText>
-                  This card has supporting text below as a natural lead-in to
-                  additional content.
-                </CardText>
-                <Button>Button</Button>
-              </CardBody>
-            </Card>
-            <Card>
-              <CardImg alt="Card image cap" src={bg3} top width="100%" />
-              <CardBody>
-                <CardTitle tag="h5">Card title</CardTitle>
-                <CardSubtitle className="mb-2 text-muted" tag="h6">
-                  Card subtitle
-                </CardSubtitle>
-                <CardText>
-                  This is a wider card with supporting text below as a natural
-                  lead-in to additional content. This card has even longer
-                  content than the first to show that equal height action.
-                </CardText>
-                <Button>Button</Button>
-              </CardBody>
-            </Card>
-          </CardGroup>
-        </Col>
-      </Row>
+      </Row> */}
     </div>
   );
 };
