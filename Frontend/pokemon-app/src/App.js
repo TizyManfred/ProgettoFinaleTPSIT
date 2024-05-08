@@ -1,18 +1,10 @@
-import logo from './logo.svg';
-import './App.css';
-import Navbar from './components/navbar';
-import 'bootstrap/dist/css/bootstrap.css';
+import { useRoutes } from "react-router-dom";
+import Themeroutes from "./routes/Router";
 
-function App() {
-  return (
-    <>
-        <Navbar/>
-        <div className="container-fluid">
-          
-          
-        </div>
-      </>
-  );
-}
+const App = () => {
+  const routing = useRoutes(Themeroutes);
+
+  return <div className="dark">{routing}</div>;
+};
 
 export default App;
