@@ -3,95 +3,9 @@ const axios = require('axios');
 const mysql = require('mysql');
 const session = require('express-session');
 const bodyParser = require('body-parser');
-
 const app = express();
-
-// Configurazione del middleware di sessione
-app.use(session({
-  secret: 'segreto', // Chiave segreta per la firma delle sessioni
-  resave: false, // Non salvare la sessione se non viene modificata
-  saveUninitialized: false, // Non salvare la sessione per i nuovi utenti non autenticati
-}));
-
-// Configurazione del database
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'pokemon'
-});
-
-// Connessione al database
-connection.connect((err) => {
-  if (err) {
-    console.error('Errore di connessione al database:', err);
-    return;
-  }
-  console.log('Connessione al database MySQL riuscita');
-});
-
-// Esempio di una route per ottenere dati dal database
-app.get('/dati', (req, res) => {
-  const query = 'SELECT * FROM tabella';
-  connection.query(query, (err, results) => {
-    if (err) {
-      console.error('Errore nell\'esecuzione della query:', err);
-      res.status(500).send('Errore nel recupero dei dati dal database');
-      return;
-    }
-    res.json(results);
-  });
-});
-
-app.get('/api/pokemon', async (req, res) => {
-    try {
-        const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=20');
-        const pokemonList = await Promise.all(response.data.results.map(async pokemon => {
-          const pokemonData = await axios.get(pokemon.url);
-          if (!pokemonData.data.evolves_from_species) {
-            return {
-              name: pokemon.name,
-              type: pokemonData.data.types[0].type.name,
-              imageUrl: pokemonData.data.sprites.front_default
-            };
-          }
-        }));
-        // Rimuoviamo i valori nulli dall'array risultante
-        const filteredList = pokemonList.filter(pokemon => pokemon !== undefined);
-        res.json(pokemonList);
-  } catch (error) {
-    console.error('Errore durante il recupero della lista dei Pokémon:', error);
-    res.status(500).json({ error: 'Errore durante il recupero dei dati.' });
-  }
-});
-
-
-
-app.get('/api/pokemon2', async (req, res) => {
-  try {
-    const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=110&offset=220');
-    const pokemonList = await Promise.all(response.data.results.map(async pokemon => {
-      const pokemonData = await axios.get(pokemon.url);
-      const evolutionChainResponse = await axios.get(pokemonData.data.species.url);
-      const hasEvolutions = evolutionChainResponse.data.evolves_from_species ? true : false;
-      if (!hasEvolutions) {
-        return {
-          name: pokemon.name,
-          type: pokemonData.data.types[0].type.name,
-          imageUrl: pokemonData.data.sprites.front_default
-        };
-      }
-    }));
-    const filteredList = pokemonList.filter(pokemon => pokemon !== undefined);
-    res.json(filteredList);
-  } catch (error) {
-    console.error('Errore durante il recupero della lista dei Pokémon:', error);
-    res.status(500).json({ error: 'Errore durante il recupero dei dati.' });
-  }
-});
-
-
-
+const allTypes = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'];
+app.use(bodyParser.json());
 // Funzione per ottenere casualmente un numero compreso tra min e max
 const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -110,7 +24,7 @@ const getRandomPokemon = async () => {
   }
 };
 
-// Funzione per mescollare un array (utilizzata per mescolare le opzioni di risposta)
+// Funzione per mescolare un array (utilizzata per mescolare le opzioni di risposta)
 const shuffleArray = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -119,8 +33,151 @@ const shuffleArray = (array) => {
   return array;
 };
 
-// Route per gestire la richiesta del quiz
-app.get('/quiz', async (req, res) => {
+// Funzione per prendere tutte le mosse di un determinato pokemon
+async function getPokemonDetailsFromAPI(pokemonId) {
+  try {
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+    const pokemonMoves = {
+      moves: response.data.moves.map(move => move.move.name) // Ottieni i nomi delle mosse del Pokémon
+    };
+
+    // Seleziona casualmente 4 mosse tra quelle disponibili
+    pokemonMoves.randomMoves = getRandomMoves(pokemonMoves.moves);
+
+    return pokemonMoves;
+  } catch (error) {
+    console.error('Errore durante il recupero dei dettagli del Pokémon dall\'API:', error);
+    throw error;
+  }
+}
+
+// Funzione per selezionare casualmente 4 mosse tra quelle disponibili
+function getRandomMoves(moves) {
+  const randomMoves = [];
+  const shuffledMoves = moves.sort(() => Math.random() - 0.5); // Mischia l'array di mosse
+  for (let i = 0; i < 4; i++) {
+    randomMoves.push(shuffledMoves[i]);
+  }
+  return randomMoves;
+}
+
+// Configurazione del database
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'gestorepokemon'
+});
+
+// Connessione al database
+connection.connect((err) => {
+  if (err) {
+    console.error('Errore di connessione al database:', err);
+    return;
+  }
+  console.log('Connessione al database MySQL riuscita');
+});
+
+// Funzione per ottenere la lista di Pokémon dal database per un dato utente
+function getPokemonListFromDB(userId) {
+  const query = `
+    SELECT Id
+    FROM pokemon
+    WHERE Username_Utente = ?;
+  `;
+  return new Promise((resolve, reject) => {
+    connection.query(query, [userId], (error, results, fields) => {
+      if (error) {
+        console.error('Errore durante il recupero della lista dei Pokémon dal database:', error);
+        reject(error);
+        return;
+      }
+      const pokemonIds = results.map(row => row.Id);
+      resolve(pokemonIds);
+    });
+  });
+}
+
+const userId="1";
+
+// Lista di pokemon base tra i primi 110+pichu
+app.get('/api/pokemon', async (req, res) => {
+  try {
+    const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=110');
+    const pokemonList = await Promise.all(response.data.results.map(async pokemon => {
+      const pokemonData = await axios.get(pokemon.url);
+      const evolutionChainResponse = await axios.get(pokemonData.data.species.url);
+      const hasEvolutions = evolutionChainResponse.data.evolves_from_species ? true : false;
+      if (!hasEvolutions) {
+        return {
+          id: pokemonData.data.id,
+          name: pokemon.name,
+          type: pokemonData.data.types[0].type.name,
+          imageUrl: pokemonData.data.sprites.front_default
+        };
+      }
+    }));
+
+    // Aggiungi Pichu manualmente alla lista
+    const pichu = {
+      id: 172, // ID di Pichu sulla PokeAPI
+      name: 'pichu',
+      type: 'electric',
+      imageUrl: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/172.png'
+    };
+    pokemonList.push(pichu);
+    
+    // Ottieni la lista di Pokémon dal database
+    
+    var pokemonListFromDB = ""; // Implementa questa funzione per ottenere la lista di Pokémon dal database
+    
+    try {
+      pokemonListFromDB = await getPokemonListFromDB(userId);
+    } catch (error) {
+      console.error('Errore:', error);
+    }
+    // Filtra i Pokémon ottenuti dall'API per escludere quelli già presenti nel database
+    const filteredPokemonList = pokemonList.filter(apiPokemon => {
+      if(apiPokemon!==undefined)
+        return !pokemonListFromDB.includes(apiPokemon.id);
+    });
+    // Invia la lista filtrata di Pokémon al client
+    res.json(filteredPokemonList);
+  } catch (error) {
+    console.error('Errore durante il recupero della lista dei Pokémon:', error);
+    res.status(500).json({ error: 'Errore durante il recupero dei dati.' });
+  }
+});
+
+//Inserimento pokemon scelto dall'utente
+app.post('/api/pokemon', async (req, res) => {
+  const { pokemonId, userId } = req.body;
+
+  try {
+    // Ottieni i dettagli del Pokémon dall'API
+    const pokemonDetails = await getPokemonDetailsFromAPI(pokemonId);
+
+    // Inserisci il nuovo Pokémon nel database per l'utente specificato
+    const insertQuery = `
+      INSERT INTO pokemon (Id, Livello, Shiny, Mossa1, Mossa2, Mossa3, Mossa4, Username_Utente)
+      VALUES (?, 1, 0, ?, ?, ?, ?, ?);
+    `;
+    connection.query(insertQuery, [pokemonId, pokemonDetails.randomMoves[0], pokemonDetails.randomMoves[1], pokemonDetails.randomMoves[2], pokemonDetails.randomMoves[3], userId], (error, results, fields) => {
+      if (error) {
+        console.error('Errore durante l\'inserimento del nuovo Pokémon nel database:', error);
+        res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
+        return;
+      }
+      console.log('Nuovo Pokémon aggiunto al database.');
+      res.json({ success: true });
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Errore durante l\'aggiunta del nuovo Pokémon.' });
+  }
+});
+
+// Allenamento, quiz per migliorare il pokemon
+app.get('/api/allenamento', async (req, res) => {
   try {
     const pokemon = await getRandomPokemon();
     const { name, sprites, types } = pokemon;
@@ -133,7 +190,6 @@ app.get('/quiz', async (req, res) => {
     const correctType = types[0].type.name;
 
     // Estrai casualmente altri tipi di Pokemon diversi dal tipo corretto
-    const allTypes = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'];
     const otherTypes = allTypes.filter(type => type !== correctType);
     const randomTypes = [];
     for (let i = 0; i < 3; i++) {
@@ -157,50 +213,16 @@ app.get('/quiz', async (req, res) => {
   }
 });
 
-app.post('/quiz/answer', (req, res) => {
-  const { userAnswer, correctAnswer } = req.body;
-
-  // Verifica se la risposta dell'utente è corretta confrontandola con la risposta corretta
-  const isCorrect = userAnswer === correctAnswer;
-  if(isCorrect){
-    //Aumento il livello del pokemon
-  }
-  // Invia la risposta (corretta o errata) al frontend
-  res.json({ isCorrect });
-});
-
-app.use(bodyParser.json());
 
 
 
-// Route per la gestione delle richieste di login
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  const sql = 'SELECT * FROM users WHERE username = ? AND password = ?';
-  db.query(sql, [username, password], (err, result) => {
-    if (err) {
-      res.status(500).send('Errore del server');
-    } else if (result.length > 0) {
-      // Creazione della sessione dopo il login con successo
-      req.session.user = username;
-      res.status(200).send('Accesso effettuato con successo');
-    } else {
-      res.status(401).send('Credenziali non valide');
-    }
-  });
-});
 
-function requireAuth(req, res, next) {
-  if (req.session.user) {
-    // L'utente è autenticato, procedi alla prossima route o middleware
-    next();
-  } else {
-    // L'utente non è autenticato, reindirizzalo alla pagina di login o restituisci un errore
-    res.status(401).send('Utente non autenticato');
-  }
-}
+
+// Chiusura della connessione al database quando non è più necessario
+// connection.end();
+
+
 
 app.listen(5000, () => {
   console.log('Il server è in ascolto sulla porta 5000');
 });
-
