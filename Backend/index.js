@@ -10,6 +10,12 @@ app.use(bodyParser.json());
 const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*'); // Consenti l'accesso da tutti i domini
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE'); // Metodi consentiti
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Intestazioni consentite
+  next();
+});
 
 // Funzione per ottenere un Pokemon casuale dall'API
 const getRandomPokemon = async () => {
