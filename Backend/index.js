@@ -229,6 +229,6 @@ app.get('/api/allenamento', async (req, res) => {
 
 
 
-app.listen(5000, () => {
+app.listen(50000, () => {
   console.log('Il server è in ascolto sulla porta 5000');
 });
