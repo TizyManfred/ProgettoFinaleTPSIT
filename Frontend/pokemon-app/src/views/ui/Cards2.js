@@ -10,7 +10,7 @@ import {
     Row,
     Col,
   } from "reactstrap";
-  import Blog from "../../components/dashboard/Blog";
+  import Blog2 from "../../components/dashboard/Blog2";
   //import bg1 from "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png";
   import bg2 from "../../assets/images/bg/bg2.jpg";
   import bg3 from "../../assets/images/bg/bg3.jpg";
@@ -21,49 +21,7 @@ import {
  
 
   const BlogData = [
-    {
-      image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/109.png",
-      name: "bulbasaur",
-      subtitle: "grass",
-      description:
-        "This is a wider card with supporting text below as a natural lead-in to additional content.",
-      btnbg: "primary",
-    },
-    {
-      name: "koffing",
-      type: "poison",
-      imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/109.png",
-      level: "5",
-      ability1: "cacca",
-      ability2: "pupù",
-      ability3: "pipì",
-      ability4: "chini"
-    }
-  
-    // {
-    //   image: bg2,
-    //   title: "Lets be simple blog",
-    //   subtitle: "2 comments, 1 Like",
-    //   description:
-    //     "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    //   btnbg: "primary",
-    // },
-    // {
-    //   image: bg3,
-    //   title: "Don't Lamp blog",
-    //   subtitle: "2 comments, 1 Like",
-    //   description:
-    //     "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    //   btnbg: "primary",
-    // },
-    // {
-    //   image: bg4,
-    //   title: "Simple is beautiful",
-    //   subtitle: "2 comments, 1 Like",
-    //   description:
-    //     "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    //   btnbg: "primary",
-    // },
+    
   ];
   
 
@@ -88,7 +46,7 @@ import {
       <Row>
         {data.map((blg, index) => (
           <Col sm="6" lg="6" xl="3" key={index}>
-            <Blog
+            <Blog2
               name = {blg.name}
               type = {blg.type}
               imageUrl = {blg.imageUrl}
@@ -97,10 +55,6 @@ import {
               ability2 = {blg.ability2}
               ability3 = {blg.ability3}
               ability4 = {blg.ability4}
-
-              
-
-
             />
           </Col>
         ))}

@@ -16,224 +16,70 @@ import Blog from "../../components/dashboard/Blog";
 import bg2 from "../../assets/images/bg/bg2.jpg";
 import bg3 from "../../assets/images/bg/bg3.jpg";
 import bg4 from "../../assets/images/bg/bg4.jpg";
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 
 const BlogData = [
   {
-    image: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-    title: "bulbasaur",
-    subtitle: "grass",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    btnbg: "primary",
-  },
-
-
-
-
-
-
-
-  {
-    image: bg2,
-    title: "Lets be simple blog",
-    subtitle: "2 comments, 1 Like",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    btnbg: "primary",
-  },
-  {
-    image: bg3,
-    title: "Don't Lamp blog",
-    subtitle: "2 comments, 1 Like",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
-    btnbg: "primary",
-  },
-  {
-    image: bg4,
-    title: "Simple is beautiful",
-    subtitle: "2 comments, 1 Like",
-    description:
-      "This is a wider card with supporting text below as a natural lead-in to additional content.",
+    name: "squirtle",
+    type: "water",
+    imageUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png",
     btnbg: "primary",
   },
 ];
 
 const Cards = () => {
-  return (
-    <div>
-      {/* --------------------------------------------------------------------------------*/}
-      {/* Card-1*/}
-      {/* --------------------------------------------------------------------------------*/}
-      <h5 className="mb-3">I Tuoi Pokemon</h5>
-      <Row>
-        {BlogData.map((blg, index) => (
-          <Col sm="6" lg="6" xl="3" key={index}>
-            <Blog
-              image={blg.image}
-              title={blg.title}
-              subtitle={blg.subtitle}
-              text={blg.description}
-              color={blg.btnbg}
-            />
-          </Col>
-        ))}
-      </Row>
+  const [data, setData] = useState([]);
 
-
-
-      {/* --------------------------------------------------------------------------------*/}
-      {/* Card-2*/}
-      {/* --------------------------------------------------------------------------------*/}
-
-
-
-      {/* <Row>
-        <h5 className="mb-3 mt-3">Alignment Text</h5>
-        <Col md="6" lg="4">
-          <Card body>
-            <CardTitle tag="h5">Special Title Treatment</CardTitle>
-            <CardText>
-              With supporting text below as a natural lead-in to additional
-              content.
-            </CardText>
-            <div>
-              <Button color="light-warning">Go somewhere</Button>
-            </div>
-          </Card>
+  useEffect(() => {
+    axios.get('http://localhost:5000/api/pokemon')
+      .then(response => {
+        setData(response.data);
+      })
+      .catch(error => {
+        console.error('Errore nella richiesta API:', error);
+      });
+  }, []);
+  console.log(data);
+  return (<div>
+    {/* --------------------------------------------------------------------------------*/}
+    {/* Card-1*/}
+    {/* --------------------------------------------------------------------------------*/}
+    <h1 className="mb-3">Scegli Pokémon</h1>
+    <Row>
+      {data.map((blg, index) => (
+        <Col sm="6" lg="6" xl="3" key={index}>
+          <Blog
+            name={blg.name}
+            type={blg.type}
+            imageUrl={blg.imageUrl}
+          />
         </Col>
-        <Col md="6" lg="4">
-          <Card body className="text-center">
-            <CardTitle tag="h5">Special Title Treatment</CardTitle>
-            <CardText>
-              With supporting text below as a natural lead-in to additional
-              content.
-            </CardText>
-            <div>
-              <Button color="light-danger">Go somewhere</Button>
-            </div>
-          </Card>
-        </Col>
-        <Col md="6" lg="4">
-          <Card body className="text-end">
-            <CardTitle tag="h5">Special Title Treatment</CardTitle>
-            <CardText>
-              With supporting text below as a natural lead-in to additional
-              content.
-            </CardText>
-            <div>
-              <Button color="light-success">Go somewhere</Button>
-            </div>
-          </Card>
-        </Col>
-      </Row> */}
-      {/* --------------------------------------------------------------------------------*/}
-      {/* Card-2*/}
-      {/* --------------------------------------------------------------------------------*/}
-
-
-
-      {/* <Row>
-        <h5 className="mb-3 mt-3">Colored Card</h5>
-        <Col md="6" lg="3">
-          <Card body color="primary" inverse>
-            <CardTitle tag="h5">Special Title Treatment</CardTitle>
-            <CardText>
-              With supporting text below as a natural lead-in to additional
-              content.
-            </CardText>
-            <div>
-              <Button>Button</Button>
-            </div>
-          </Card>
-        </Col>
-        <Col md="6" lg="3">
-          <Card body color="info" inverse>
-            <CardTitle tag="h5">Special Title Treatment</CardTitle>
-            <CardText>
-              With supporting text below as a natural lead-in to additional
-              content.
-            </CardText>
-            <div>
-              <Button>Button</Button>
-            </div>
-          </Card>
-        </Col>
-        <Col md="6" lg="3">
-          <Card body color="success" inverse>
-            <CardTitle tag="h5">Special Title Treatment</CardTitle>
-            <CardText>
-              With supporting text below as a natural lead-in to additional
-              content.
-            </CardText>
-            <div>
-              <Button>Button</Button>
-            </div>
-          </Card>
-        </Col>
-        <Col md="6" lg="3">
-          <Card body color="danger" inverse>
-            <CardTitle tag="h5">Special Title Treatment</CardTitle>
-            <CardText>
-              With supporting text below as a natural lead-in to additional
-              content.
-            </CardText>
-            <div>
-              <Button>Button</Button>
-            </div>
-          </Card>
-        </Col>
-        <Col md="6" lg="3">
-          <Card body color="light-warning">
-            <CardTitle tag="h5">Special Title Treatment</CardTitle>
-            <CardText>
-              With supporting text below as a natural lead-in to additional
-              content.
-            </CardText>
-            <div>
-              <Button>Button</Button>
-            </div>
-          </Card>
-        </Col>
-        <Col md="6" lg="3">
-          <Card body color="light-info">
-            <CardTitle tag="h5">Special Title Treatment</CardTitle>
-            <CardText>
-              With supporting text below as a natural lead-in to additional
-              content.
-            </CardText>
-            <div>
-              <Button>Button</Button>
-            </div>
-          </Card>
-        </Col>
-        <Col md="6" lg="3">
-          <Card body color="light-success">
-            <CardTitle tag="h5">Special Title Treatment</CardTitle>
-            <CardText>
-              With supporting text below as a natural lead-in to additional
-              content.
-            </CardText>
-            <div>
-              <Button>Button</Button>
-            </div>
-          </Card>
-        </Col>
-        <Col md="6" lg="3">
-          <Card body color="light-danger">
-            <CardTitle tag="h5">Special Title Treatment</CardTitle>
-            <CardText>
-              With supporting text below as a natural lead-in to additional
-              content.
-            </CardText>
-            <div>
-              <Button>Button</Button>
-            </div>
-          </Card>
-        </Col>
-      </Row> */}
-    </div>
+      ))}
+    </Row>
+  </div>
   );
+
+// const Cards = () => {
+//   return (
+//     <div>
+//       {/* --------------------------------------------------------------------------------*/}
+//       {/* Card-1*/}
+//       {/* --------------------------------------------------------------------------------*/}
+//       <h5 className="mb-3">I Tuoi Pokemon</h5>
+//       <Row>
+//         {BlogData.map((blg, index) => (
+//           <Col sm="6" lg="6" xl="3" key={index}>
+//             <Blog
+//               name={blg.name}
+//               type={blg.type}
+//               imageUrl={blg.imageUrl}
+//             />
+//           </Col>
+//         ))}
+//       </Row>
+//     </div>
+//   );
 };
 
 export default Cards;
