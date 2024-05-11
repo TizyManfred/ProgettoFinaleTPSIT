@@ -42,8 +42,6 @@ const Blog = (props) => {
       setIsLoading(false);
     }
   };
-  
-  
 
   return (
     <Card>

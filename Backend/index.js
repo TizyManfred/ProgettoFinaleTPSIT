@@ -161,9 +161,9 @@ app.post('/api/pokemon', async (req, res) => {
   const { pokemonId, userId } = req.query;
 
   try {
-    // Verifica se sono presenti l'ID della card e dell'utente
+    // Verifica se sono presenti l'ID del Pokémon e dell'utente
     if (!pokemonId || !userId) {
-      return res.status(400).json({ success: false, message: "ID della card o dell'utente mancanti" });
+      return res.status(400).json({ success: false, message: "ID del Pokémon o dell'utente mancanti" });
     }
 
     // Ottieni i dettagli del Pokémon dall'API
@@ -175,7 +175,6 @@ app.post('/api/pokemon', async (req, res) => {
       VALUES (?, 1, 0, ?, ?, ?, ?, ?);
     `;
     connection.query(insertQuery, [pokemonId, pokemonDetails.randomMoves[0], pokemonDetails.randomMoves[1], pokemonDetails.randomMoves[2], pokemonDetails.randomMoves[3], userId], (error, results, fields) => {
-      console.log(insertQuery, [pokemonId, pokemonDetails.randomMoves[0], pokemonDetails.randomMoves[1], pokemonDetails.randomMoves[2], pokemonDetails.randomMoves[3], userId], (error, results, fields));
       if (error) {
         console.error('Errore durante l\'inserimento del nuovo Pokémon nel database:', error);
         return res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
@@ -188,6 +187,7 @@ app.post('/api/pokemon', async (req, res) => {
     res.status(500).json({ error: 'Errore durante l\'aggiunta del nuovo Pokémon.' });
   }
 });
+
 
 // Allenamento, quiz per migliorare il pokemon
 app.get('/api/allenamento', async (req, res) => {
