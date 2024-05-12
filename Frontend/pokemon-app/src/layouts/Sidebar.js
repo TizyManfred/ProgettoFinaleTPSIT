@@ -15,7 +15,7 @@ const navigation = [
     icon: "bi bi-box",
   },
   {
-    title: "Scegli i pokédex",
+    title: "Cattura i pokémon",
     href: "/cards",
     icon: "bi bi-cart",
   },

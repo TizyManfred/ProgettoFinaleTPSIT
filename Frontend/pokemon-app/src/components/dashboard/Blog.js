@@ -49,7 +49,7 @@ const Blog = (props) => {
       <CardBody className="p-4">
         <CardTitle tag="h1">{props.name}</CardTitle>
         <CardSubtitle>Type: {props.type}</CardSubtitle><br></br>
-        <Button color="primary" onClick={inviaDati} disabled={isLoading}>Seleziona</Button>
+        <Button color="primary" onClick={inviaDati} disabled={isLoading}>Cattura</Button>
         {isLoading && <p>Invio in corso...</p>}
         {avviso && (
           <Alert color={avviso.includes("successo") ? "success" : "danger"}>{avviso}</Alert>

@@ -47,7 +47,7 @@ const Cards = () => {
         <div>Loading...</div>
       ) : (
         <div>
-          <h1 className="mb-3">Scegli Pokémon</h1>
+          <h1 className="mb-3">Cattura dei Pokémon</h1>
           <Row>
             {data.map((blg, index) => (
               <Col sm="6" lg="6" xl="3" key={index}>
