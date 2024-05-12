@@ -5,8 +5,14 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const allTypes = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'];
+const { getRandomPokemon, getPokemonMovesFromAPI, getEvolutionData, getPokemonDetails } = require('./pokemonApi');
+const { connection, getPokemonListFromDB } = require('./database');
+const { getRandomNumber, shuffleArray } = require('./utils');
+const userId=1;
+
 
 app.use(bodyParser.json());
+
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*'); 
@@ -15,69 +21,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
-// Funzione per ottenere casualmente un numero compreso tra min e max
-const getRandomNumber = (min, max) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-// Funzione per ottenere un Pokemon casuale dall'API
-const getRandomPokemon = async () => {
-  try {
-    const randomNumber = getRandomNumber(1, 898); // Ci sono 898 Pokemon disponibili nell'API
-    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${randomNumber}`);
-    const pokemon = response.data;
-    return pokemon;
-  } catch (error) {
-    console.error('Errore nel recuperare il Pokemon casuale:', error);
-    throw error;
-  }
-};
-
-// Funzione per mescolare un array (utilizzata per mescolare le opzioni di risposta)
-const shuffleArray = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-  return array;
-};
-
-// Funzione per prendere tutte le mosse di un determinato pokemon
-async function getPokemonDetailsFromAPI(pokemonId) {
-  try {
-    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
-    const pokemonMoves = {
-      moves: response.data.moves.map(move => move.move.name) // Ottieni i nomi delle mosse del Pokémon
-    };
-
-    // Seleziona casualmente 4 mosse tra quelle disponibili
-    pokemonMoves.randomMoves = getRandomMoves(pokemonMoves.moves);
-
-    return pokemonMoves;
-  } catch (error) {
-    console.error('Errore durante il recupero dei dettagli del Pokémon dall\'API:', error);
-    throw error;
-  }
-}
-
-// Funzione per selezionare casualmente 4 mosse tra quelle disponibili
-function getRandomMoves(moves) {
-  const randomMoves = [];
-  const shuffledMoves = moves.sort(() => Math.random() - 0.5); // Mischia l'array di mosse
-  for (let i = 0; i < 4; i++) {
-    randomMoves.push(shuffledMoves[i]);
-  }
-  return randomMoves;
-}
-
-// Configurazione del database
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'gestorepokemon'
-});
 
 // Connessione al database
 connection.connect((err) => {
@@ -88,27 +31,6 @@ connection.connect((err) => {
   console.log('Connessione al database MySQL riuscita');
 });
 
-// Funzione per ottenere la lista di Pokémon dal database per un dato utente
-function getPokemonListFromDB(userId) {
-  const query = `
-    SELECT Id
-    FROM pokemon
-    WHERE Username_Utente = ?;
-  `;
-  return new Promise((resolve, reject) => {
-    connection.query(query, [userId], (error, results, fields) => {
-      if (error) {
-        console.error('Errore durante il recupero della lista dei Pokémon dal database:', error);
-        reject(error);
-        return;
-      }
-      const pokemonIds = results.map(row => row.Id);
-      resolve(pokemonIds);
-    });
-  });
-}
-
-const userId=1;
 
 // Lista di pokemon base tra i primi 110+pichu
 app.get('/api/pokemon', async (req, res) => {
@@ -171,7 +93,7 @@ app.post('/api/pokemon', async (req, res) => {
     }
 
     // Ottieni i dettagli del Pokémon dall'API
-    const pokemonDetails = await getPokemonDetailsFromAPI(pokemonId);
+    const pokemonDetails = await getPokemonMovesFromAPI(pokemonId);
 
     // Inserisci il nuovo Pokémon nel database per l'utente specificato
     const insertQuery = `
@@ -231,89 +153,6 @@ app.get('/api/allenamento', async (req, res) => {
 });
 
 
-
-
-
-// Funzione per ottenere i dati dell'evoluzione
-async function getEvolutionData(basePokemonId) {
-  try {
-      const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${basePokemonId}`);
-      const pokemonData = response.data;
-
-      let firstEvolutionData = null;
-      let secondEvolutionData = null;
-      let thirdEvolutionData = null;
-
-      // Cerca le evoluzioni nel campo "evolution_chain" del pokemon
-  
-      const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${basePokemonId}`);
-      const evolutionChainUrl = speciesResponse.data.evolution_chain.url;
-
-      const evolutionChainResponse = await axios.get(evolutionChainUrl);
-      const evolutionChainData = evolutionChainResponse.data.chain;
-
-      // Verifica se c'è una seconda evoluzione
-      if (evolutionChainData && evolutionChainData.evolves_to && evolutionChainData.evolves_to.length > 0) {
-          secondEvolutionData = evolutionChainData.evolves_to[0].species.name;
-
-          // Verifica se c'è una terza evoluzione
-          if (evolutionChainData.evolves_to[0].evolves_to && evolutionChainData.evolves_to[0].evolves_to.length > 0) {
-              thirdEvolutionData = evolutionChainData.evolves_to[0].evolves_to[0].species.name;
-          }
-      }
-
-      // Se c'è solo una prima evoluzione, controlla se ci sono ulteriori evoluzioni dopo
-      if (evolutionChainData && evolutionChainData.species) {
-          firstEvolutionData = evolutionChainData.species.name;
-          if (evolutionChainData.evolves_to && evolutionChainData.evolves_to.length > 0) {
-              // Se esiste una seconda evoluzione, impostiamo i dati di essa
-              secondEvolutionData = evolutionChainData.evolves_to[0].species.name;
-
-              // Verifica se c'è una terza evoluzione
-              if (evolutionChainData.evolves_to[0].evolves_to && evolutionChainData.evolves_to[0].evolves_to.length > 0) {
-                  thirdEvolutionData = evolutionChainData.evolves_to[0].evolves_to[0].species.name;
-              }
-          }
-      }
-      
-
-      return {
-          firstEvolution: firstEvolutionData,
-          secondEvolution: secondEvolutionData,
-          thirdEvolution: thirdEvolutionData
-      };
-  } catch (error) {
-      console.error("Error fetching evolution data:", error);
-      return null;
-  }
-}
-async function getPokemonDetails(pokemonId) {
-  try {
-      const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
-      const pokemonData = response.data;
-
-      const imageShiny = pokemonData.sprites.front_shiny;
-      const imageUrl = pokemonData.sprites.front_default;
-
-      const name = pokemonData.name;
-      const id = pokemonData.id;
-
-      const type = pokemonData.types[0].type.name;
-      
-      return {
-          id: id,
-          imageShiny: imageShiny,
-          imageUrl: imageUrl,
-          name: name,
-          type: type
-      };
-  } catch (error) {
-      console.error("Error fetching Pokémon details:", error);
-      return null;
-  }
-}
-
-
 // Definizione della route
 app.get('/api/pokedex', async (req, res) => {
   const query = `SELECT * FROM pokemon WHERE Username_Utente = ?`;
@@ -354,13 +193,6 @@ app.get('/api/pokedex', async (req, res) => {
     res.json(pokemonData);
   });
 });
-
-
-
-
-// Chiusura della connessione al database quando non è più necessario
-// connection.end();
-
 
 
 app.listen(50000, () => {
