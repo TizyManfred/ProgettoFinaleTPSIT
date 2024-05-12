@@ -5,17 +5,21 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const allTypes = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'];
+
 app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*'); 
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE'); 
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); 
+  next();
+});
+
+
 // Funzione per ottenere casualmente un numero compreso tra min e max
 const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*'); // Consenti l'accesso da tutti i domini
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE'); // Metodi consentiti
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); // Intestazioni consentite
-  next();
-});
 
 // Funzione per ottenere un Pokemon casuale dall'API
 const getRandomPokemon = async () => {
@@ -104,7 +108,7 @@ function getPokemonListFromDB(userId) {
   });
 }
 
-const userId="1";
+const userId=1;
 
 // Lista di pokemon base tra i primi 110+pichu
 app.get('/api/pokemon', async (req, res) => {
@@ -220,6 +224,129 @@ app.get('/api/allenamento', async (req, res) => {
 });
 
 
+
+
+
+// Funzione per ottenere i dati dell'evoluzione
+async function getEvolutionData(basePokemonId) {
+  try {
+      const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${basePokemonId}`);
+      const pokemonData = response.data;
+
+      let firstEvolutionData = null;
+      let secondEvolutionData = null;
+      let thirdEvolutionData = null;
+
+      // Cerca le evoluzioni nel campo "evolution_chain" del pokemon
+  
+      const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${basePokemonId}`);
+      const evolutionChainUrl = speciesResponse.data.evolution_chain.url;
+
+      const evolutionChainResponse = await axios.get(evolutionChainUrl);
+      const evolutionChainData = evolutionChainResponse.data.chain;
+
+      // Verifica se c'è una seconda evoluzione
+      if (evolutionChainData && evolutionChainData.evolves_to && evolutionChainData.evolves_to.length > 0) {
+          secondEvolutionData = evolutionChainData.evolves_to[0].species.name;
+
+          // Verifica se c'è una terza evoluzione
+          if (evolutionChainData.evolves_to[0].evolves_to && evolutionChainData.evolves_to[0].evolves_to.length > 0) {
+              thirdEvolutionData = evolutionChainData.evolves_to[0].evolves_to[0].species.name;
+          }
+      }
+
+      // Se c'è solo una prima evoluzione, controlla se ci sono ulteriori evoluzioni dopo
+      if (evolutionChainData && evolutionChainData.species) {
+          firstEvolutionData = evolutionChainData.species.name;
+          if (evolutionChainData.evolves_to && evolutionChainData.evolves_to.length > 0) {
+              // Se esiste una seconda evoluzione, impostiamo i dati di essa
+              secondEvolutionData = evolutionChainData.evolves_to[0].species.name;
+
+              // Verifica se c'è una terza evoluzione
+              if (evolutionChainData.evolves_to[0].evolves_to && evolutionChainData.evolves_to[0].evolves_to.length > 0) {
+                  thirdEvolutionData = evolutionChainData.evolves_to[0].evolves_to[0].species.name;
+              }
+          }
+      }
+      
+
+      return {
+          firstEvolution: firstEvolutionData,
+          secondEvolution: secondEvolutionData,
+          thirdEvolution: thirdEvolutionData
+      };
+  } catch (error) {
+      console.error("Error fetching evolution data:", error);
+      return null;
+  }
+}
+async function getPokemonDetails(pokemonId) {
+  try {
+      const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+      const pokemonData = response.data;
+
+      const imageShiny = pokemonData.sprites.front_shiny;
+      const imageUrl = pokemonData.sprites.front_default;
+
+      const name = pokemonData.name;
+      const id = pokemonData.id;
+
+      const type = pokemonData.types[0].type.name;
+      
+      return {
+          id: id,
+          imageShiny: imageShiny,
+          imageUrl: imageUrl,
+          name: name,
+          type: type
+      };
+  } catch (error) {
+      console.error("Error fetching Pokémon details:", error);
+      return null;
+  }
+}
+
+
+// Definizione della route
+app.get('/api/pokedex', async (req, res) => {
+  const query = `SELECT * FROM pokemon WHERE Username_Utente = ?`;
+  
+  connection.query(query, [userId], async (error, results) => {
+    if (error) {
+      console.error('Errore durante l\'esecuzione della query:', error);
+      res.status(500).json({ error: 'Errore durante l\'esecuzione della query' });
+      return;
+    }
+    const pokemonData = await Promise.all(results.map(async pokemon => {
+      evolution=await getEvolutionData(pokemon.Id);
+      pokemonName=evolution.firstEvolution;
+      if(pokemon.Livello>=16 && evolution.secondEvolution!==null){
+        pokemonName=evolution.secondEvolution;
+      }
+      if(pokemon.Livello>=32 && evolution.thirdEvolution!==null){
+        pokemonName=evolution.thirdEvolution;
+      }
+      console.log(pokemonName)
+      let pokemonDetails=await getPokemonDetails(pokemonName);
+      console.log(pokemonDetails)
+      console.log(pokemonDetails.id)
+      const imageUrl = pokemon.Shiny===1 ? pokemonDetails.imageShiny : pokemonDetails.imageUrl;
+      return {
+        id: pokemonDetails.id,
+        name: pokemonDetails.name,
+        level: pokemon.Livello,
+        imageUrl: imageUrl,
+        ability1: pokemon.Mossa1,
+        ability2:pokemon.Mossa2, 
+        ability3:pokemon.Mossa3, 
+        ability4:pokemon.Mossa4
+      };
+
+    }));
+    // Invia i risultati della query come risposta JSON
+    res.json(pokemonData);
+  });
+});
 
 
 
