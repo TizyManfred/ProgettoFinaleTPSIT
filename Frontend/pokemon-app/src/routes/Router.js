@@ -15,7 +15,7 @@ const Cards = lazy(() => import("../views/ui/Cards"));
 const Cards2 = lazy(() => import("../views/ui/Cards2"));
 const Grid = lazy(() => import("../views/ui/Grid"));
 const Tables = lazy(() => import("../views/ui/Tables"));
-const Forms = lazy(() => import("../views/ui/Forms"));
+const Alerts2 = lazy(() => import("../views/ui/Alerts2"));
 const Breadcrumbs = lazy(() => import("../views/ui/Breadcrumbs"));
 
 /*****Routes******/
@@ -35,7 +35,7 @@ const ThemeRoutes = [
       { path: "/cards2", exact: true, element: <Cards2 /> },
       { path: "/grid", exact: true, element: <Grid /> },
       { path: "/table", exact: true, element: <Tables /> },
-      { path: "/forms", exact: true, element: <Forms /> },
+      { path: "/Alerts2", exact: true, element: <Alerts2 /> },
       { path: "/breadcrumbs", exact: true, element: <Breadcrumbs /> },
     ],
   },

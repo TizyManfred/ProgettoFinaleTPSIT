@@ -25,7 +25,7 @@ const navigation = [
   },
   {
     title: "Allenamento speciale",
-    href: "/forms",
+    href: "/Alerts2",
     icon: "bi bi-graph-up-arrow",
   },
 ];

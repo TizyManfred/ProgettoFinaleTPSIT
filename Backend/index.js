@@ -159,11 +159,17 @@ app.get('/api/pokemon', async (req, res) => {
   }
 });
 
-//Inserimento pokemon scelto dall'utente
+
+// Inserimento pokemon scelto dall'utente
 app.post('/api/pokemon', async (req, res) => {
-  const { pokemonId, userId } = req.body;
+  const { pokemonId, userId } = req.query;
 
   try {
+    // Verifica se sono presenti l'ID del Pokémon e dell'utente
+    if (!pokemonId || !userId) {
+      return res.status(400).json({ success: false, message: "ID del Pokémon o dell'utente mancanti" });
+    }
+
     // Ottieni i dettagli del Pokémon dall'API
     const pokemonDetails = await getPokemonDetailsFromAPI(pokemonId);
 
@@ -175,16 +181,17 @@ app.post('/api/pokemon', async (req, res) => {
     connection.query(insertQuery, [pokemonId, pokemonDetails.randomMoves[0], pokemonDetails.randomMoves[1], pokemonDetails.randomMoves[2], pokemonDetails.randomMoves[3], userId], (error, results, fields) => {
       if (error) {
         console.error('Errore durante l\'inserimento del nuovo Pokémon nel database:', error);
-        res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
-        return;
+        return res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
       }
       console.log('Nuovo Pokémon aggiunto al database.');
       res.json({ success: true });
     });
   } catch (error) {
+    console.error('Errore durante l\'aggiunta del nuovo Pokémon:', error);
     res.status(500).json({ error: 'Errore durante l\'aggiunta del nuovo Pokémon.' });
   }
 });
+
 
 // Allenamento, quiz per migliorare il pokemon
 app.get('/api/allenamento', async (req, res) => {
@@ -356,6 +363,6 @@ app.get('/api/pokedex', async (req, res) => {
 
 
 
-app.listen(5000, () => {
+app.listen(50000, () => {
   console.log('Il server è in ascolto sulla porta 5000');
 });
