@@ -13,8 +13,8 @@ import {
   Dropdown,
   Button,
 } from "reactstrap";
-import { ReactComponent as LogoWhite } from "../assets/images/logos/xtremelogowhite.svg";
-import user1 from "../assets/images/users/user1.jpg";
+import { ReactComponent as LogoWhite } from "../assets/images/logos/pokemon.svg";
+import pokeball from "../assets/images/users/pokeball1.png";
 
 const Header = () => {
   const [isOpen, setIsOpen] = React.useState(false);
@@ -87,7 +87,7 @@ const Header = () => {
         <Dropdown isOpen={dropdownOpen} toggle={toggle}>
           <DropdownToggle color="primary">
             <img
-              src={user1}
+              src={pokeball}
               alt="profile"
               className="rounded-circle"
               width="30"
