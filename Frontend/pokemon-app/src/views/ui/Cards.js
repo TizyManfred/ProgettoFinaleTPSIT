@@ -38,7 +38,7 @@ const Cards = () => {
       });
   }, []);
 
-  console.log(data);
+  
 
   return (
     <div>

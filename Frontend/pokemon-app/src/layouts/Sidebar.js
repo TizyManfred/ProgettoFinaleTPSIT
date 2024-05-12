@@ -1,6 +1,7 @@
 import { Button, Nav, NavItem } from "reactstrap";
 import Logo from "./Logo";
 import { Link, useLocation } from "react-router-dom";
+import './sidebar.css';
 
 const navigation = [
   {
@@ -9,12 +10,12 @@ const navigation = [
     icon: "bi bi-house-door",
   },
   {
-    title: "I tuoi pokemon",
+    title: "Pokédex",
     href: "/cards2",
     icon: "bi bi-box",
   },
   {
-    title: "Scegli i pokemon",
+    title: "Scegli i pokédex",
     href: "/cards",
     icon: "bi bi-cart",
   },
@@ -37,8 +38,9 @@ const Sidebar = () => {
   let location = useLocation();
 
   return (
-    <div className="p-3">
-      <div className="d-flex align-items-center">
+    <div className="p-3 sidebar">
+      
+      <div className="d-flex align-items-center ">
         <Logo />
         <span className="ms-auto d-lg-none">
         <Button
