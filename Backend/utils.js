@@ -19,7 +19,7 @@ function getRandomMoves(moves) {
       randomMoves.push(shuffledMoves[i]);
     }
     return randomMoves;
-  }
+}
 module.exports = {
     getRandomNumber,
     shuffleArray,

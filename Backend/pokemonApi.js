@@ -1,9 +1,10 @@
 const axios = require('axios');
 const { getRandomNumber, getRandomMoves } = require('./utils');
+const maxPokemonId = 1025;
 
 async function getRandomPokemon() {
     try {
-        const randomNumber = getRandomNumber(1, 898); // Ci sono 898 Pokemon disponibili nell'API
+        const randomNumber = getRandomNumber(1, maxPokemonId); 
         const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${randomNumber}`);
         const pokemon = response.data;
         return pokemon;
@@ -110,9 +111,33 @@ async function getPokemonDetails(pokemonId) {
     }
   }
 
+// pokemonApi.js
+async function getRandomPokemons(count) {
+    const randomPokemons = [];
+    try {
+      while (randomPokemons.length < count) {
+        const randomPokemonId = getRandomNumber(1, maxPokemonId);
+        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${randomPokemonId}`);
+        const pokemon = response.data;
+        // Verifica se il nome del Pokémon è già presente nella lista
+        if (!randomPokemons.some(p => p.name === pokemon.name)) {
+          randomPokemons.push(pokemon);
+        }
+      }
+      console.log(randomPokemons)
+      return randomPokemons;
+    } catch (error) {
+      console.error('Errore nel recuperare i Pokémon casuali:', error);
+      throw error;
+    }
+  }
+  
+
+
 module.exports = {
   getRandomPokemon,
   getPokemonMovesFromAPI,
   getEvolutionData,
-  getPokemonDetails
+  getPokemonDetails,
+  getRandomPokemons
 };

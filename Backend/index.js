@@ -5,7 +5,7 @@ const session = require('express-session');
 const bodyParser = require('body-parser');
 const app = express();
 const allTypes = ['normal', 'fire', 'water', 'electric', 'grass', 'ice', 'fighting', 'poison', 'ground', 'flying', 'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'];
-const { getRandomPokemon, getPokemonMovesFromAPI, getEvolutionData, getPokemonDetails } = require('./pokemonApi');
+const { getRandomPokemon, getPokemonMovesFromAPI, getEvolutionData, getPokemonDetails, getRandomPokemons } = require('./pokemonApi');
 const { connection, getPokemonListFromDB } = require('./database');
 const { getRandomNumber, shuffleArray } = require('./utils');
 const userId=1;
@@ -115,45 +115,7 @@ app.post('/api/pokemon', async (req, res) => {
 });
 
 
-// Allenamento, quiz per migliorare il pokemon
-app.get('/api/allenamento', async (req, res) => {
-  try {
-    const pokemon = await getRandomPokemon();
-    const { name, sprites, types } = pokemon;
-
-    // Estrai il nome e l'URL dell'immagine del Pokemon
-    const pokemonName = name;
-    const pokemonImage = sprites.front_default;
-
-    // Estrai il tipo corretto del Pokemon
-    const correctType = types[0].type.name;
-
-    // Estrai casualmente altri tipi di Pokemon diversi dal tipo corretto
-    const otherTypes = allTypes.filter(type => type !== correctType);
-    const randomTypes = [];
-    for (let i = 0; i < 3; i++) {
-      const randomIndex = getRandomNumber(0, otherTypes.length - 1);
-      randomTypes.push(otherTypes[randomIndex]);
-      otherTypes.splice(randomIndex, 1);
-    }
-
-    // Aggiungi il tipo corretto e mescola le opzioni di risposta
-    const quizOptions = shuffleArray([...randomTypes, correctType]);
-
-    // Invia i dati del quiz all'utente, inclusa la risposta corretta
-    res.json({
-      pokemonName,
-      pokemonImage,
-      quizOptions,
-      correctAnswer: correctType,
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Errore nel recuperare il Pokemon casuale.' });
-  }
-});
-
-
-// Definizione della route
+// Lista pokemon
 app.get('/api/pokedex', async (req, res) => {
   const query = `SELECT * FROM pokemon WHERE Username_Utente = ?`;
   
@@ -192,6 +154,73 @@ app.get('/api/pokedex', async (req, res) => {
     // Invia i risultati della query come risposta JSON
     res.json(pokemonData);
   });
+});
+
+
+// Allenamento, quiz per migliorare il livello dei pokemon
+app.get('/api/allenamento', async (req, res) => {
+  try {
+    const pokemon = await getRandomPokemon();
+    const { name, sprites, types } = pokemon;
+
+    // Estrai il nome e l'URL dell'immagine del Pokemon
+    const pokemonName = name;
+    const pokemonImage = sprites.front_default;
+
+    // Estrai il tipo corretto del Pokemon
+    const correctType = types[0].type.name;
+
+    // Estrai casualmente altri tipi di Pokemon diversi dal tipo corretto
+    const otherTypes = allTypes.filter(type => type !== correctType);
+    const randomTypes = [];
+    for (let i = 0; i < 3; i++) {
+      const randomIndex = getRandomNumber(0, otherTypes.length - 1);
+      randomTypes.push(otherTypes[randomIndex]);
+      otherTypes.splice(randomIndex, 1);
+    }
+
+    // Aggiungi il tipo corretto e mescola le opzioni di risposta
+    const quizOptions = shuffleArray([...randomTypes, correctType]);
+
+    // Invia i dati del quiz all'utente, inclusa la risposta corretta
+    res.json({
+      pokemonName,
+      pokemonImage,
+      quizOptions,
+      correctAnswer: correctType,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Errore nel recuperare il Pokemon casuale.' });
+  }
+});
+
+
+// Allenamento, quiz per migliorare i pokemon rendendoli shiny
+app.get('/api/allenamentoSpeciale', async (req, res) => {
+  try {
+    const pokemons = await getRandomPokemons(4);
+    
+    console.log("ciao1")
+    // Estrai il nome e l'URL dell'immagine del Pokemon
+    const pokemonImage = pokemons[0].sprites.front_default;
+    console.log("ciao2")
+    // Estrai il tipo corretto del Pokemon
+    const correctName = pokemons[0].name;
+
+    // Aggiungi il tipo corretto e mescola le opzioni di risposta
+    const randomNames = [pokemons[1].name,pokemons[2].name,pokemons[3].name];
+    console.log("ciao3")
+    const quizOptions = shuffleArray([...randomNames, correctName]);
+
+    // Invia i dati del quiz all'utente, inclusa la risposta corretta
+    res.json({
+      pokemonImage,
+      quizOptions,
+      correctAnswer: correctName,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Errore nel recuperare il Pokemon casuale.', error });
+  }
 });
 
 
