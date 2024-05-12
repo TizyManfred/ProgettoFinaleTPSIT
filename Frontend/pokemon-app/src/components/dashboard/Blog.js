@@ -12,10 +12,13 @@ import {
 const Blog = (props) => {
   const [avviso, setAvviso] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [catturato, setCatturato] = useState(false);
+  var catturaStr="Cattura";
   const inviaDati = async () => {
     try {
       setIsLoading(true);
+      setCatturato(true);
+      catturaStr="Catturato"
       const response = await fetch(`http://localhost:50000/api/pokemon?pokemonId=${props.pokemonId}&userId=${props.userId}`, {
         method: 'POST',
         headers: {
@@ -37,8 +40,9 @@ const Blog = (props) => {
         setAvviso("Impossibile connettersi al server. Controlla la tua connessione internet.");
       } else {
         setAvviso("Si è verificato un errore durante l'invio dei dati. Per favore, riprova più tardi.");
-      }
-    } finally {
+      }catturato(false)
+      catturaStr="Cattura";
+    } finally{
       setIsLoading(false);
     }
   };
@@ -49,7 +53,7 @@ const Blog = (props) => {
       <CardBody className="p-4">
         <CardTitle tag="h1">{props.name}</CardTitle>
         <CardSubtitle>Type: {props.type}</CardSubtitle><br></br>
-        <Button color="primary" onClick={inviaDati} disabled={isLoading}>Cattura</Button>
+        <Button color="primary" onClick={inviaDati} disabled={catturato}>{catturaStr}</Button>
         {isLoading && <p>Invio in corso...</p>}
         {avviso && (
           <Alert color={avviso.includes("successo") ? "success" : "danger"}>{avviso}</Alert>

@@ -12,6 +12,7 @@ const userId=1;
 
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 
 app.use((req, res, next) => {
@@ -32,10 +33,10 @@ connection.connect((err) => {
 });
 
 
-// Lista di pokemon base tra i primi 110+pichu
+// Lista di pokemon base tra i primi 110+pichu 
 app.get('/api/pokemon', async (req, res) => {
   try {
-    const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=110');
+    const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=50');
     const pokemonList = await Promise.all(response.data.results.map(async pokemon => {
       const pokemonData = await axios.get(pokemon.url);
       const evolutionChainResponse = await axios.get(pokemonData.data.species.url);
@@ -115,7 +116,7 @@ app.post('/api/pokemon', async (req, res) => {
 });
 
 
-// Lista pokemon
+// Lista pokemon utente
 app.get('/api/pokedex', async (req, res) => {
   const query = `SELECT * FROM pokemon WHERE Username_Utente = ?`;
   
@@ -195,7 +196,106 @@ app.get('/api/allenamento', async (req, res) => {
 });
 
 
-// Allenamento, quiz per migliorare i pokemon rendendoli shiny
+app.post('/api/allenamento', async (req, res) => {
+  const { userId, answer, correctAnswer } = req.query;
+  try {
+    // Verifica se sono presenti l'ID del Pokémon e dell'utente
+    if (!answer || !userId || !correctAnswer) {
+      return res.status(400).json({ success: false, message: "ID dell'utente, risposta o risposta corretta mancanti" });
+    }
+
+    if (answer === correctAnswer) {
+      // Se la risposta è corretta, esegui una query per selezionare un Pokémon casuale
+      const randomPokemonQuery = `
+          SELECT * FROM pokemon
+          ORDER BY RAND()
+          LIMIT 1;
+      `;
+      connection.query(randomPokemonQuery, [], (error, results, fields) => {
+          if (error) {
+              console.error('Errore durante l\'inserimento del nuovo Pokémon nel database:', error);
+              return res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
+          }
+          var randomPokemon
+          if(results.length>0){
+            randomPokemon = results[0]; // Extract the first row from the results
+          }else{
+            return res.json({ success: true, message: 'Nessun pokemon da allenare' });
+          }
+          if (!randomPokemon) {
+              return res.status(404).json({ success: false, message: "Nessun Pokémon trovato" });
+          }
+          console.log(randomPokemon);
+          // Aggiorna il livello del Pokémon recuperato
+          const updatedLevel = randomPokemon.Livello + 1;
+          const updatePokemonQuery = `
+              UPDATE pokemon
+              SET Livello = ?
+              WHERE Id = ? AND Username_Utente = ?;
+          `;
+          var id=userId
+          connection.query(updatePokemonQuery, [updatedLevel, randomPokemon.Id, id], async (error, result, fields) => {
+              if (error) {
+                  console.error('Errore durante l\'aggiornamento del livello del Pokémon:', error);
+                  return res.status(500).json({ error: 'Errore durante l\'aggiornamento del livello del Pokémon.' });
+              }
+              evolution= await getEvolutionData(randomPokemon.Id)
+              if(updatedLevel<16 || evolution.secondEvolution==null){
+                message='Risposta corretta! Il livello del tuo pokemon '+ evolution.firstEvolution + " ora è "+ updatedLevel
+                return res.json({ success: true, message: message});
+              }else if(updatedLevel==16){
+                const pokemonDetails=await getPokemonMovesFromAPI(evolution.secondEvolution)
+                updateQuery=`UPDATE pokemon
+                  SET Mossa1 = ?, Mossa2 = ?, Mossa3 = ?, Mossa4 = ?
+                  WHERE Id = ? AND Username_Utente = ?;
+                `
+                connection.query(updateQuery, [pokemonDetails.randomMoves[0], pokemonDetails.randomMoves[1], pokemonDetails.randomMoves[2], pokemonDetails.randomMoves[3], randomPokemon.Id, id], (error, results, fields) => {
+                  if (error) {
+                    console.error('Errore durante l\'inserimento del nuovo Pokémon nel database:', error);
+                    return res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
+                  }
+                  message='Risposta corretta! Il tuo pokemon '+evolution.firstEvolution+' si è evoluto in '+ evolution.secondEvolution +' e ha imparato nuove mosse'
+                  return res.json({ success: true, message: message});
+                });
+              }else if(updatedLevel<32 || evolution.thirdEvolution==null){
+                message='Risposta corretta! Il livello del tuo pokemon '+ evolution.secondEvolution+ " ora è "+ updatedLevel
+                return res.json({ success: true, message: message});
+              }else if(updatedLevel==32){
+                const pokemonDetails=await getPokemonMovesFromAPI(evolution.thirdEvolution)
+                updateQuery=`UPDATE pokemon
+                  SET Mossa1 = ?, Mossa2 = ?, Mossa3 = ?, Mossa4 = ?
+                  WHERE Id = ? AND Username_Utente = ?;
+                `
+                connection.query(updateQuery, [pokemonDetails.randomMoves[0], pokemonDetails.randomMoves[1], pokemonDetails.randomMoves[2], pokemonDetails.randomMoves[3], randomPokemon.Id,id], (error, results, fields) => {
+                  if (error) {
+                    console.error('Errore durante l\'inserimento del nuovo Pokémon nel database:', error);
+                    return res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
+                  }
+                  message='Risposta corretta! Il tuo pokemon '+evolution.secondEvolution +' si è evoluto in '+ evolution.thirdEvolution+' e ha imparato nuove mosse'
+                  return res.json({ success: true, message: message});
+                });
+              }else if(updatedLevel>32){
+                message='Risposta corretta! Il livello del tuo pokemon '+ evolution.thirdEvolution+ " ora è "+ updatedLevel
+                return res.json({ success: true, message: message});
+              }else{
+                return res.json("che cazzo ne so")
+              }
+          });
+      });
+  } else {
+      // Restituisci una risposta JSON se la risposta non è corretta
+      res.json({ success: true, message: 'Risposta errata.' });
+  }
+  
+    
+  } catch (error) {
+    console.error('Errore durante la gestione della risposta di allenamento:', error);
+    res.status(500).json({ error: 'Errore durante la gestione della risposta di allenamento.' });
+  }
+});
+
+
+// Allenamento speciale, quiz per migliorare i pokemon rendendoli shiny
 app.get('/api/allenamentoSpeciale', async (req, res) => {
   try {
     const pokemons = await getRandomPokemons(4);
@@ -220,6 +320,79 @@ app.get('/api/allenamentoSpeciale', async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Errore nel recuperare il Pokemon casuale.', error });
+  }
+});
+
+
+app.post('/api/allenamentoSpeciale', async (req, res) => {
+  const { userId, answer, correctAnswer } = req.query;
+  try {
+    // Verifica se sono presenti l'ID del Pokémon e dell'utente
+    if (!answer || !userId || !correctAnswer) {
+      return res.status(400).json({ success: false, message: "ID dell'utente, risposta o risposta corretta mancanti" });
+    }
+
+    if (answer === correctAnswer) {
+      // Se la risposta è corretta, esegui una query per selezionare un Pokémon casuale
+      const randomPokemonQuery = `
+          SELECT * FROM pokemon
+          WHERE Shiny = 0
+          ORDER BY RAND()
+          LIMIT 1;
+      `;
+      connection.query(randomPokemonQuery, [], (error, results, fields) => {
+          if (error) {
+              console.error('Errore durante l\'inserimento del nuovo Pokémon nel database:', error);
+              return res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
+          }
+          var randomPokemon
+          if(results.length>0){
+            randomPokemon = results[0]; // Extract the first row from the results
+          }else{
+            return res.json({ success: true, message: 'Nessun pokemon da rendere shiny' });
+          }
+
+          
+          if (!randomPokemon) {
+              return res.status(404).json({ success: false, message: "Nessun Pokémon trovato" });
+          }
+          // Aggiorna shiny del Pokémon recuperato
+          const updatePokemonQuery = `
+              UPDATE pokemon
+              SET Shiny = 1
+              WHERE Id = ? AND Username_Utente = ?;
+          `;
+          var id=userId
+          connection.query(updatePokemonQuery, [randomPokemon.Id, id], async (error, result, fields) => {
+              if (error) {
+                  console.error('Errore durante l\'aggiornamento shiny del Pokémon:', error);
+                  return res.status(500).json({ error: 'Errore durante l\'aggiornamento shiny del Pokémon.' });
+              }
+              evolution=await getEvolutionData(randomPokemon.Id)
+              if(randomPokemon.Livello<16 || evolution.secondEvolution==null){
+                message='Il tuo pokemon '+evolution.firstEvolution+' è diventato shiny'
+                return res.json({ success: true, message: message })
+              }else if(randomPokemon.Livello<32 || evolution.thirdEvolution==null){
+                message='Il tuo pokemon '+evolution.secondEvolution+' è diventato shiny'
+                return res.json({ success: true, message: message })
+              }else{
+                message='Il tuo pokemon '+evolution.thirdEvolution+' è diventato shiny'
+                return res.json({ success: true, message: message })
+              }
+              
+
+              
+          });
+      });
+  } else {
+      // Restituisci una risposta JSON se la risposta non è corretta
+      res.json({ success: true, message: 'Risposta errata.' });
+  }
+  
+    
+  } catch (error) {
+    console.error('Errore durante la gestione della risposta di allenamento:', error);
+    res.status(500).json({ error: 'Errore durante la gestione della risposta di allenamento.' });
   }
 });
 

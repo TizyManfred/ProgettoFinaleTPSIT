@@ -8,13 +8,6 @@ const connection = mysql.createConnection({
   database: 'gestorepokemon'
 });
 
-connection.connect((err) => {
-  if (err) {
-    console.error('Errore di connessione al database:', err);
-    return;
-  }
-  console.log('Connessione al database MySQL riuscita');
-});
 
 function getPokemonListFromDB(userId) {
     const query = `
