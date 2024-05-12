@@ -333,10 +333,9 @@ app.get('/api/pokedex', async (req, res) => {
       if(pokemon.Livello>=32 && evolution.thirdEvolution!==null){
         pokemonName=evolution.thirdEvolution;
       }
-      console.log(pokemonName)
+      
       let pokemonDetails=await getPokemonDetails(pokemonName);
-      console.log(pokemonDetails)
-      console.log(pokemonDetails.id)
+      
       const imageUrl = pokemon.Shiny===1 ? pokemonDetails.imageShiny : pokemonDetails.imageUrl;
       return {
         id: pokemonDetails.id,

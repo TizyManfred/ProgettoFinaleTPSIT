@@ -25,7 +25,7 @@ const Alerts = () => {
 
   return (
     <div>
-      <h1 className="mb-3">Quale è il tipo del pokemon</h1>
+      <h1 className="mb-3">Quale è il tipo di {data.pokemonName} </h1>
       {data && Object.keys(data).length > 0 && ( // Check if data is not empty
       <Row>
         <img src={data.pokemonImage} alt="pro version" className="w-25"/>
