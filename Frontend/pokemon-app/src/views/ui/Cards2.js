@@ -29,7 +29,7 @@ import {
     const [data, setData] = useState([]);
   
     useEffect(() => {
-      axios.get('http://localhost:50000/api/pokemon')
+      axios.get('http://localhost:50000/api/pokedex')
         .then(response => {
           setData(response.data);
         })

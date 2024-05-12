@@ -14,7 +14,7 @@ const Alerts = () => {
   const [data, setData] = useState({});
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/allenamento')
+    axios.get('http://localhost:50000/api/allenamento')
       .then(response => {
         setData(response.data);
       })

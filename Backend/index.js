@@ -341,6 +341,7 @@ app.get('/api/pokedex', async (req, res) => {
       return {
         id: pokemonDetails.id,
         name: pokemonDetails.name,
+        type: pokemonDetails.type,
         level: pokemon.Livello,
         imageUrl: imageUrl,
         ability1: pokemon.Mossa1,
