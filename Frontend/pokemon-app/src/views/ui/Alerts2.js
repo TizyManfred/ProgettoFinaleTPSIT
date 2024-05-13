@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import Loader from "../../layouts/loader/Loader";
 import {
   Row,
   Col,
@@ -13,6 +14,7 @@ const Alerts = () => {
   const [data, setData] = useState({});
   const [selectedOption, setSelectedOption] = useState(null);
   const [message, setMessage] = useState(null);
+  const [loading, setLoading] = useState(true); // Aggiungi lo stato per il caricamento
 
   useEffect(() => {
     axios.get('http://localhost:50000/api/allenamentoSpeciale')
@@ -21,6 +23,9 @@ const Alerts = () => {
       })
       .catch(error => {
         console.error('Errore nella richiesta API:', error);
+      })
+      .finally(() => {
+        setLoading(false); // Imposta lo stato di caricamento su false una volta completata la richiesta
       });
   }, []);
 
@@ -52,8 +57,16 @@ const Alerts = () => {
     window.location.reload(); // Ricarica la pagina
   };
 
+
+
+
+
+
+
+
   return (
     <div>
+
       {message ? (
         <div>
           <h1>{message}</h1>
