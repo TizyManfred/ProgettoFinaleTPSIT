@@ -12,7 +12,7 @@ import {
 const FeedData = [
   {
     title: "Gabbo ha migliorato un pokemon",
-    icon: "bi bi-fire",
+    icon: "bi bi-capslock",
     color: "warning",
     date: "6 minuti fa",
   },
@@ -24,27 +24,21 @@ const FeedData = [
   },
   {
     title: "Sami ha catturato un nuovo pokemon",
-    icon: "bi bi-bell",
+    icon: "bi bi-fire",
     color: "success",
     date: "32 minuti fa",
   },
   {
-    title: "New order received.",
-    icon: "bi bi-bag-check",
-    color: "success",
-    date: "6 minute ago",
+    title: "Massimiliano ha reso un pokemon shiny",
+    icon: "bi bi-capslock",
+    color: "danger",
+    date: "1 ora fa",
   },
   {
-    title: "Cras justo odio",
-    icon: "bi bi-bell",
-    color: "dark",
-    date: "6 minute ago",
-  },
-  {
-    title: "Server #1 overloaded.",
-    icon: "bi bi-hdd",
+    title: "Tiziano ha migliorato un pokemon",
+    icon: "bi bi-fire",
     color: "warning",
-    date: "6 minute ago",
+    date: "2 ore fa",
   },
 ];
 
