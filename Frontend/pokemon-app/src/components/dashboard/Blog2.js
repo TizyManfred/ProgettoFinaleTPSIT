@@ -22,11 +22,6 @@ const Blog = (props) => {
         <CardSubtitle> - {props.ability2}</CardSubtitle>
         <CardSubtitle> - {props.ability3}</CardSubtitle>
         <CardSubtitle> - {props.ability4}</CardSubtitle>
-        <br></br>
-        <Button color="primary">allenamento Base</Button> 
-        <br></br>
-        <br></br>
-        <Button color="primary">allenamento Speciale</Button> 
       </CardBody>
     </Card>
   );
