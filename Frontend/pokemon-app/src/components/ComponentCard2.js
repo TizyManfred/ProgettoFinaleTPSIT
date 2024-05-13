@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 const ComponentCard = ({ children, title, subtitle }) => {
   return (
     <Card className='shadow-none'>
-      <CardTitle tag="h1" className="px-4 mb-1">
+      <CardTitle tag="h1" className="px-4 mb-1 mx-auto">
         {title}
       </CardTitle>
       <CardBody className="p-4 pt-2">
