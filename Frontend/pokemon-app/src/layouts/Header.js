@@ -24,8 +24,8 @@ const Header = () => {
   const Handletoggle = () => {
     setIsOpen(!isOpen);
   };
-  const showMobilemenu = () => {
-    document.getElementById("sidebarArea").classList.toggle("showSidebar");
+  const hideMobilemenu = () => {
+    document.querySelector('.sidebar').classList.toggle("hidden");
   };
   return (
     <Navbar color="primary" dark expand="md">
@@ -36,7 +36,7 @@ const Header = () => {
         <Button
           color="primary"
           className="d-lg-none"
-          onClick={() => showMobilemenu()}
+          onClick={() => hideMobilemenu()}
         >
           <i className="bi bi-list"></i>
         </Button>

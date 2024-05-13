@@ -11,22 +11,22 @@ import {
 
 const FeedData = [
   {
-    title: "Cras justo odio",
-    icon: "bi bi-bell",
-    color: "primary",
-    date: "6 minute ago",
+    title: "Gabbo ha migliorato un pokemon",
+    icon: "bi bi-fire",
+    color: "warning",
+    date: "6 minuti fa",
   },
   {
-    title: "New user registered.",
+    title: "Nuovo utente registrato",
     icon: "bi bi-person",
     color: "info",
-    date: "6 minute ago",
+    date: "20 minuti fa",
   },
   {
-    title: "Server #1 overloaded.",
-    icon: "bi bi-hdd",
-    color: "danger",
-    date: "6 minute ago",
+    title: "Sami ha catturato un nuovo pokemon",
+    icon: "bi bi-bell",
+    color: "success",
+    date: "32 minuti fa",
   },
   {
     title: "New order received.",
@@ -52,10 +52,11 @@ const Feeds = () => {
   return (
     <Card>
       <CardBody>
-        <CardTitle tag="h5">Feeds</CardTitle>
+        <CardTitle tag="h5">Attività</CardTitle>
         <CardSubtitle className="mb-2 text-muted" tag="h6">
-          Widget you can use
+          Qui puoi vedere le attività di tutti gli utenti
         </CardSubtitle>
+
         <ListGroup flush className="mt-4">
           {FeedData.map((feed, index) => (
             <ListGroupItem

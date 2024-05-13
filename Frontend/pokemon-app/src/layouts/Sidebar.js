@@ -32,8 +32,14 @@ const navigation = [
 ];
 
 const Sidebar = () => {
-  const showMobilemenu = () => {
-    document.getElementById("sidebarArea").classList.toggle("showSidebar");
+  // const showMobilemenu = () => {
+  //   // document.getElementById("sidebarArea").classList.toggle("showSidebar");
+  //   document.querySelector('.sidebar').classList.toggle("showSidebar");
+  // };
+
+  const hideMobilemenu = () => {
+    // document.getElementById("sidebarArea").classList.toggle("showSidebar");
+    document.querySelector('.sidebar').classList.toggle("hidden");
   };
   let location = useLocation();
 
@@ -47,7 +53,7 @@ const Sidebar = () => {
           close
           size="sm"
           className="ms-auto d-lg-none"
-          onClick={() => showMobilemenu()}
+          onClick={() => hideMobilemenu()}
         ></Button>
         </span>
       </div>

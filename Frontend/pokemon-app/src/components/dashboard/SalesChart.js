@@ -5,12 +5,8 @@ const SalesChart = () => {
   const chartoptions = {
     series: [
       {
-        name: "Iphone 13",
+        name: "Users",
         data: [0, 31, 40, 28, 51, 42, 109, 100],
-      },
-      {
-        name: "Oneplue 9",
-        data: [0, 11, 32, 45, 32, 34, 52, 41],
       },
     ],
     options: {
@@ -30,14 +26,14 @@ const SalesChart = () => {
       },
       xaxis: {
         categories: [
-          "Jan",
-          "Feb",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "Aug",
+          "A week ago",
+          "6 days ago",
+          "5 days ago",
+          "4 days ago",
+          "3 days ago",
+          "2 days ago",
+          "Yesterday",
+          "Today",
         ],
       },
     },
@@ -45,9 +41,9 @@ const SalesChart = () => {
   return (
     <Card>
       <CardBody>
-        <CardTitle tag="h5">Sales Summary</CardTitle>
+        <CardTitle tag="h5">Numero accessi</CardTitle>
         <CardSubtitle className="text-muted" tag="h6">
-          Yearly Sales Report
+          Qui puoi vedere il numero di utenti che effettuano l'accesso ogni giorno
         </CardSubtitle>
         <Chart
           type="area"

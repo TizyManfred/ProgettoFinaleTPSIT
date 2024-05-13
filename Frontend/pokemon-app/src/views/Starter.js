@@ -52,55 +52,63 @@ const Starter = () => {
         <Col sm="6" lg="3">
           <TopCards
             bg="bg-light-success text-success"
-            title="Profit"
-            subtitle="Yearly Earning"
-            earning="$21k"
-            icon="bi bi-wallet"
+            title="Pokèdex"
+            subtitle="Tutti i tuoi pokemon sono qui"
+            earning="Pokèdex"
+            icon="bi bi-box"
+            href="#/cards2"
           />
         </Col>
         <Col sm="6" lg="3">
           <TopCards
             bg="bg-light-danger text-danger"
             title="Refunds"
-            subtitle="Refund given"
-            earning="$1k"
-            icon="bi bi-coin"
+            subtitle="Cattura qui i tuoi pokemon"
+            earning="Cattura pokemon"
+            icon="bi bi-cart"
+            href="#/cards"
           />
         </Col>
         <Col sm="6" lg="3">
           <TopCards
             bg="bg-light-warning text-warning"
-            title="New Project"
-            subtitle="Yearly Project"
-            earning="456"
-            icon="bi bi-basket3"
+            title="Allenamento base"
+            subtitle="Aumenta il livello dei pokemon"
+            earning="Allenamento base"
+            icon="bi bi-speedometer2"
+            href="#/alerts"
           />
         </Col>
         <Col sm="6" lg="3">
           <TopCards
             bg="bg-light-info text-into"
-            title="Sales"
-            subtitle="Weekly Sales"
-            earning="210"
-            icon="bi bi-bag"
+            title="Allenamento speciale"
+            subtitle="Rendi il pokemon shiny"
+            earning="Allenamento speciale"
+            icon="bi bi-graph-up-arrow"
+            href="#/alerts2"
           />
         </Col>
       </Row>
+
       {/***Sales & Feed***/}
       <Row>
         <Col sm="6" lg="6" xl="7" xxl="8">
           <SalesChart />
         </Col>
+        
         <Col sm="6" lg="6" xl="5" xxl="4">
           <Feeds />
         </Col>
       </Row>
+
       {/***Table ***/}
       <Row>
         <Col lg="12">
           <ProjectTables />
         </Col>
       </Row>
+
       {/***Blog Cards***/}
       <Row>
         {BlogData.map((blg, index) => (
