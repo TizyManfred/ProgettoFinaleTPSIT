@@ -30,13 +30,13 @@ const FeedData = [
   },
   {
     title: "Massimiliano ha reso un pokemon shiny",
-    icon: "bi bi-capslock",
+    icon: "bi bi-fire",
     color: "danger",
     date: "1 ora fa",
   },
   {
     title: "Tiziano ha migliorato un pokemon",
-    icon: "bi bi-fire",
+    icon: "bi bi-capslock",
     color: "warning",
     date: "2 ore fa",
   },

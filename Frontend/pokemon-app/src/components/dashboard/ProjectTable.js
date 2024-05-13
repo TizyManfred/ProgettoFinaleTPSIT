@@ -3,53 +3,44 @@ import user1 from "../../assets/images/users/user1.jpg";
 import user2 from "../../assets/images/users/user2.jpg";
 import user3 from "../../assets/images/users/user3.jpg";
 import user4 from "../../assets/images/users/user4.jpg";
-import user5 from "../../assets/images/users/user5.jpg";
+//import user5 from "../../assets/images/users/user5.jpg";
 
 const tableData = [
   {
     avatar: user1,
-    name: "Hanna Gover",
-    email: "hgover@gmail.com",
-    project: "Flexy React",
-    status: "pending",
-    weeks: "35",
-    budget: "95K",
+    name: "GabryChini",
+    email: "gabriele.chini@buonarroti.tn.it",
+    grado: "Allenatore",
+    status: "online",
+    settimane: "13",
+    pokemon: "15",
   },
   {
     avatar: user2,
-    name: "Hanna Gover",
-    email: "hgover@gmail.com",
-    project: "Lading pro React",
-    status: "done",
-    weeks: "35",
-    budget: "95K",
+    name: "SamiFacc",
+    email: "sami.facchinelli@buonarroti.tn.it",
+    grado: "Maestro",
+    status: "offline",
+    settimane: "11",
+    pokemon: "21",
   },
   {
     avatar: user3,
-    name: "Hanna Gover",
-    email: "hgover@gmail.com",
-    project: "Elite React",
+    name: "MassiFedri",
+    email: "max.fedrizi@buonarroti.tn.it",
+    grado: "Campione",
     status: "holt",
-    weeks: "35",
-    budget: "95K",
+    settimane: "15",
+    pokemon: "32",
   },
   {
     avatar: user4,
-    name: "Hanna Gover",
-    email: "hgover@gmail.com",
-    project: "Flexy React",
-    status: "pending",
-    weeks: "35",
-    budget: "95K",
-  },
-  {
-    avatar: user5,
-    name: "Hanna Gover",
-    email: "hgover@gmail.com",
-    project: "Ample React",
-    status: "done",
-    weeks: "35",
-    budget: "95K",
+    name: "TizyManfred",
+    email: "tiziano.manfredi@buonarroti.tn.it",
+    grado: "Capo palestra",
+    status: "online",
+    settimane: "3",
+    pokemon: "7",
   },
 ];
 
@@ -58,22 +49,22 @@ const ProjectTables = () => {
     <div>
       <Card>
         <CardBody>
-          <CardTitle tag="h5">Project Listing</CardTitle>
+          <CardTitle tag="h5">Utenti in tendenza</CardTitle>
           <CardSubtitle className="mb-2 text-muted" tag="h6">
-            Overview of the projects
+            Questi sono gli utenti con più ore di gioco
           </CardSubtitle>
 
           <Table className="no-wrap mt-3 align-middle" responsive borderless>
             <thead>
               <tr>
-                <th>Team Lead</th>
-                <th>Project</th>
-
+                <th>Utente</th>
+                <th>Grado</th>
                 <th>Status</th>
-                <th>Weeks</th>
-                <th>Budget</th>
+                <th>Ore di gioco</th>
+                <th>Pokemon</th>
               </tr>
             </thead>
+
             <tbody>
               {tableData.map((tdata, index) => (
                 <tr key={index} className="border-top">
@@ -86,24 +77,26 @@ const ProjectTables = () => {
                         width="45"
                         height="45"
                       />
+
                       <div className="ms-3">
                         <h6 className="mb-0">{tdata.name}</h6>
                         <span className="text-muted">{tdata.email}</span>
                       </div>
                     </div>
                   </td>
-                  <td>{tdata.project}</td>
+                  <td>{tdata.grado}</td>
                   <td>
-                    {tdata.status === "pending" ? (
-                      <span className="p-2 bg-danger rounded-circle d-inline-block ms-3"></span>
-                    ) : tdata.status === "holt" ? (
-                      <span className="p-2 bg-warning rounded-circle d-inline-block ms-3"></span>
-                    ) : (
+                    {tdata.status === "online" ? (
+                      
                       <span className="p-2 bg-success rounded-circle d-inline-block ms-3"></span>
-                    )}
+                    ) :  (
+                      <span className="p-2 bg-danger rounded-circle d-inline-block ms-3"></span>
+                      //<span className="p-2 bg-warning rounded-circle d-inline-block ms-3"></span>
+                    ) 
+                  }
                   </td>
-                  <td>{tdata.weeks}</td>
-                  <td>{tdata.budget}</td>
+                  <td>{tdata.pokemon}</td>
+                  <td>{tdata.settimane}</td>
                 </tr>
               ))}
             </tbody>
