@@ -11,7 +11,7 @@ import {
   Row,
   Col,
 } from "reactstrap";
-
+import Loader from "../../layouts/loader/Loader";
 import Blog from "../../components/dashboard/Blog";
 //import bg1 from "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png";
 import bg2 from "../../assets/images/bg/bg2.jpg";
@@ -44,7 +44,7 @@ const Cards = () => {
     <div>
       {/* Visualizza un messaggio di caricamento finché la richiesta è in corso */}
       {loading ? (
-        <div>Loading...</div>
+        <Loader/>
       ) : (
         <div>
           <h1 className="mb-3">Cattura dei Pokémon</h1>
