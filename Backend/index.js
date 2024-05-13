@@ -208,6 +208,7 @@ app.post('/api/allenamento', async (req, res) => {
       // Se la risposta è corretta, esegui una query per selezionare un Pokémon casuale
       const randomPokemonQuery = `
           SELECT * FROM pokemon
+          WHERE Username_Utente=${userId}
           ORDER BY RAND()
           LIMIT 1;
       `;
@@ -336,7 +337,7 @@ app.post('/api/allenamentoSpeciale', async (req, res) => {
       // Se la risposta è corretta, esegui una query per selezionare un Pokémon casuale
       const randomPokemonQuery = `
           SELECT * FROM pokemon
-          WHERE Shiny = 0
+          WHERE Shiny = 0 AND Username_Utente = ${userId}
           ORDER BY RAND()
           LIMIT 1;
       `;
