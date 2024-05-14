@@ -58,6 +58,7 @@ import {
               ability2 = {blg.ability2}
               ability3 = {blg.ability3}
               ability4 = {blg.ability4}
+              shiny = {blg.shiny}
             />
           </Col>
         ))}

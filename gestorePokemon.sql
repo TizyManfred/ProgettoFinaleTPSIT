@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Mag 12, 2024 alle 15:24
+-- Creato il: Mag 14, 2024 alle 15:51
 -- Versione del server: 10.4.27-MariaDB
 -- Versione PHP: 8.2.0
 
@@ -45,11 +45,15 @@ CREATE TABLE `pokemon` (
 --
 
 INSERT INTO `pokemon` (`Id`, `Livello`, `Shiny`, `Mossa1`, `Mossa2`, `Mossa3`, `Mossa4`, `Username_Utente`) VALUES
-(1, 18, 1, 'grass-whistle', 'return', 'energy-ball', 'worry-seed', '1'),
-(10, 32, 1, 'tackle', 'electroweb', 'snore', 'bug-bite', '1'),
-(37, 1, 1, 'body-slam', 'reflect', 'spite', 'frustration', '1'),
-(133, 16, 0, 'stored-power', 'sunny-day', 'iron-tail', 'hidden-power', '1'),
-(145, 1, 0, 'light-screen', 'discharge', 'double-team', 'hidden-power', '1');
+(4, 35, 1, 'fire-spin', 'beat-up', 'crunch', 'swords-dance', '1'),
+(7, 35, 1, 'weather-ball', 'skull-bash', 'rage', 'rock-tomb', '1'),
+(21, 1, 1, 'detect', 'whirlwind', 'tri-attack', 'curse', '1'),
+(37, 22, 1, 'body-slam', 'reflect', 'hidden-power', 'encore', '1'),
+(41, 25, 1, 'twister', 'double-edge', 'snore', 'razor-wind', '1'),
+(72, 1, 0, 'bide', 'frustration', 'double-edge', 'aurora-beam', '1'),
+(74, 1, 0, 'magnitude', 'captivate', 'bulldoze', 'tera-blast', '1'),
+(74, 15, 0, 'sleep-talk', 'bulldoze', 'ancient-power', 'dynamic-punch', '2'),
+(172, 3, 1, 'thunder-punch', 'bestow', 'rollout', 'flail', '1');
 
 -- --------------------------------------------------------
 
@@ -73,7 +77,8 @@ CREATE TABLE `utente` (
 --
 
 INSERT INTO `utente` (`Username`, `Email`, `Nome`, `Cognome`, `DataDiNascita`, `Telefono`, `Residenza`, `Password`) VALUES
-('1', 'prova@gmail.com', 'Prova', 'Prova', '2024-05-09', '1234567890', 'Prova', 'Prova');
+('1', 'prova@gmail.com', 'Prova', 'Prova', '2024-05-09', '1234567890', 'Prova', 'Prova'),
+('2', 'prova@gmail.com', 'Prova', 'Prova', '2024-05-09', '1234567890', 'Prova', 'Prova');
 
 --
 -- Indici per le tabelle scaricate
@@ -83,7 +88,7 @@ INSERT INTO `utente` (`Username`, `Email`, `Nome`, `Cognome`, `DataDiNascita`, `
 -- Indici per le tabelle `pokemon`
 --
 ALTER TABLE `pokemon`
-  ADD PRIMARY KEY (`Id`),
+  ADD PRIMARY KEY (`Id`,`Username_Utente`),
   ADD KEY `maurizio` (`Username_Utente`);
 
 --

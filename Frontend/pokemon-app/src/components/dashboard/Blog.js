@@ -51,7 +51,7 @@ const Blog = (props) => {
     <Card>
       <CardImg alt="Card image cap" src={props.imageUrl} />
       <CardBody className="p-4">
-        <CardTitle tag="h1">{props.name}</CardTitle>
+        <CardTitle tag="h1">{props.name.charAt(0).toUpperCase() + props.name.slice(1)}</CardTitle>
         <CardSubtitle>Type: {props.type}</CardSubtitle><br></br>
         <Button color="primary" onClick={inviaDati} disabled={catturato}>{catturaStr}</Button>
         {isLoading && <p>Invio in corso...</p>}

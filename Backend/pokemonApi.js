@@ -124,7 +124,6 @@ async function getRandomPokemons(count) {
           randomPokemons.push(pokemon);
         }
       }
-      console.log(randomPokemons)
       return randomPokemons;
     } catch (error) {
       console.error('Errore nel recuperare i Pokémon casuali:', error);

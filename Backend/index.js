@@ -36,7 +36,7 @@ connection.connect((err) => {
 // Lista di pokemon base tra i primi 110+pichu 
 app.get('/api/pokemon', async (req, res) => {
   try {
-    const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=50');
+    const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=110');
     const pokemonList = await Promise.all(response.data.results.map(async pokemon => {
       const pokemonData = await axios.get(pokemon.url);
       const evolutionChainResponse = await axios.get(pokemonData.data.species.url);
@@ -137,8 +137,9 @@ app.get('/api/pokedex', async (req, res) => {
       }
       
       let pokemonDetails=await getPokemonDetails(pokemonName);
-      
+
       const imageUrl = pokemon.Shiny===1 ? pokemonDetails.imageShiny : pokemonDetails.imageUrl;
+      const isShiny = pokemon.Shiny===1 ? "Shiny" : "Not shiny";
       return {
         id: pokemonDetails.id,
         name: pokemonDetails.name,
@@ -148,7 +149,8 @@ app.get('/api/pokedex', async (req, res) => {
         ability1: pokemon.Mossa1,
         ability2:pokemon.Mossa2, 
         ability3:pokemon.Mossa3, 
-        ability4:pokemon.Mossa4
+        ability4:pokemon.Mossa4,
+        shiny: isShiny
       };
 
     }));
@@ -226,7 +228,6 @@ app.post('/api/allenamento', async (req, res) => {
           if (!randomPokemon) {
               return res.status(404).json({ success: false, message: "Nessun Pokémon trovato" });
           }
-          console.log(randomPokemon);
           // Aggiorna il livello del Pokémon recuperato
           const updatedLevel = randomPokemon.Livello + 1;
           const updatePokemonQuery = `
@@ -301,16 +302,16 @@ app.get('/api/allenamentoSpeciale', async (req, res) => {
   try {
     const pokemons = await getRandomPokemons(4);
     
-    console.log("ciao1")
+    
     // Estrai il nome e l'URL dell'immagine del Pokemon
     const pokemonImage = pokemons[0].sprites.front_default;
-    console.log("ciao2")
+    
     // Estrai il tipo corretto del Pokemon
     const correctName = pokemons[0].name;
 
     // Aggiungi il tipo corretto e mescola le opzioni di risposta
     const randomNames = [pokemons[1].name,pokemons[2].name,pokemons[3].name];
-    console.log("ciao3")
+
     const quizOptions = shuffleArray([...randomNames, correctName]);
 
     // Invia i dati del quiz all'utente, inclusa la risposta corretta
@@ -380,9 +381,6 @@ app.post('/api/allenamentoSpeciale', async (req, res) => {
                 message='Il tuo pokemon '+evolution.thirdEvolution+' è diventato shiny'
                 return res.json({ success: true, message: message })
               }
-              
-
-              
           });
       });
   } else {

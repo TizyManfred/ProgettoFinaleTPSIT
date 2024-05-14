@@ -14,9 +14,10 @@ const Blog = (props) => {
     <Card>
       <CardImg alt="Card image cap" src={props.imageUrl} />
       <CardBody className="p-4">
-        <CardTitle tag="h1">{props.name}</CardTitle>
+        <CardTitle tag="h1">{props.name.charAt(0).toUpperCase() + props.name.slice(1)}</CardTitle>
         <CardSubtitle>Type: {props.type}</CardSubtitle>
-        <CardSubtitle>Level: {props.level}</CardSubtitle><br></br>
+        <CardSubtitle>Level: {props.level}</CardSubtitle>
+        <CardSubtitle>{props.shiny}</CardSubtitle><br/>
         Ability:
         <CardSubtitle> - {props.ability1}</CardSubtitle>
         <CardSubtitle> - {props.ability2}</CardSubtitle>
