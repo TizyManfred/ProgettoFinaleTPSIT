@@ -6,27 +6,27 @@ import './sidebar.css';
 const navigation = [
   {
     title: "Home",
-    href: "/starter",
+    href: "/home",
     icon: "bi bi-house-door",
   },
   {
     title: "Pokédex",
-    href: "/cards2",
+    href: "/pokedex",
     icon: "bi bi-box",
   },
   {
     title: "Cattura i pokémon",
-    href: "/cards",
+    href: "/pokemon",
     icon: "bi bi-cart",
   },
   {
     title: "Allenamento base",
-    href: "/alerts",
+    href: "/allenamento",
     icon: "bi bi-speedometer2",
   },
   {
     title: "Allenamento speciale",
-    href: "/Alerts2",
+    href: "/allenamentoSpeciale",
     icon: "bi bi-graph-up-arrow",
   },
 ];
