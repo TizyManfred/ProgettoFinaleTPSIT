@@ -6,8 +6,9 @@ import {
   CardText,
   CardTitle,
   Button,
+  TabContent
 } from "reactstrap";
-
+import "./tab.css"
 const Blog = (props) => {
   return (
 
@@ -15,14 +16,14 @@ const Blog = (props) => {
       <CardImg alt="Card image cap" src={props.imageUrl} />
       <CardBody className="p-4">
         <CardTitle tag="h1">{props.name.charAt(0).toUpperCase() + props.name.slice(1)}</CardTitle>
-        <CardSubtitle>Type: {props.type}</CardSubtitle>
-        <CardSubtitle>Level: {props.level}</CardSubtitle>
-        <CardSubtitle>{props.shiny}</CardSubtitle><br/>
-        Ability:
-        <CardSubtitle> - {props.ability1}</CardSubtitle>
-        <CardSubtitle> - {props.ability2}</CardSubtitle>
-        <CardSubtitle> - {props.ability3}</CardSubtitle>
-        <CardSubtitle> - {props.ability4}</CardSubtitle>
+        <CardSubtitle> <i className="bi  bi-star-fill"></i> {props.type}</CardSubtitle>
+        <CardSubtitle> <i className="bi bi-bar-chart-fill"></i> {props.level}</CardSubtitle>
+        <CardSubtitle> <i className="bi bi-brightness-high-fill"></i> {props.shiny}</CardSubtitle><br/>
+        <CardSubtitle> <i className="bi bi-crosshair"></i> Ability:</CardSubtitle>
+        <CardSubtitle>     <i className="bi bi-arrow-return-right tab"></i> {props.ability1}</CardSubtitle>
+        <CardSubtitle>     <i className="bi bi-arrow-return-right tab"></i> {props.ability2}</CardSubtitle>
+        <CardSubtitle>     <i className="bi bi-arrow-return-right tab"></i> {props.ability3}</CardSubtitle>
+        <CardSubtitle>     <i className="bi bi-arrow-return-right tab"></i> {props.ability4}</CardSubtitle>
       </CardBody>
     </Card>
   );
