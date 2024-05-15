@@ -9,7 +9,7 @@ import {
 } from "reactstrap";
 import axios from 'axios';
 
-const Alerts = () => {
+const Training = () => {
   const [data, setData] = useState({});
   const [selectedOption, setSelectedOption] = useState(null);
   const [message, setMessage] = useState(null);
@@ -129,4 +129,4 @@ const Alerts = () => {
   );
 }
 
-export default Alerts;
+export default Training;

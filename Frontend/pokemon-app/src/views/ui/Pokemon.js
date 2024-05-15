@@ -21,7 +21,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 
 
-const Cards = () => {
+const Pokemon = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true); // Aggiungi lo stato per il caricamento
 
@@ -67,4 +67,4 @@ const Cards = () => {
   );
 };
 
-export default Cards;
+export default Pokemon;

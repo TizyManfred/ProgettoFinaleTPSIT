@@ -22,7 +22,7 @@ import {
   ];
   
 
-  const Cards = () => {
+  const Pokedex = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true); // Aggiungi lo stato per il caricamento
     
@@ -67,4 +67,4 @@ import {
       )}
     </div>
   )};
-  export default Cards;
+  export default Pokedex;
