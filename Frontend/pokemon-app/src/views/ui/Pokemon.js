@@ -19,6 +19,7 @@ import bg3 from "../../assets/images/bg/bg3.jpg";
 import bg4 from "../../assets/images/bg/bg4.jpg";
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import { redirect } from 'react-router-dom';
 
 
 const Pokemon = () => {
@@ -31,7 +32,12 @@ const Pokemon = () => {
         setData(response.data);
       })
       .catch(error => {
-        console.error('Errore nella richiesta API:', error);
+        if (error.response && error.response.status === 401) {
+          // Reindirizza l'utente alla pagina di login
+          window.location.href = '#/login?accesso=true';
+        }else{
+          console.error('Errore nella richiesta API:', error);
+        }
       })
       .finally(() => {
         setLoading(false); // Imposta lo stato di caricamento su false una volta completata la richiesta

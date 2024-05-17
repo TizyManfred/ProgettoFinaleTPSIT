@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Loader from "../../layouts/loader/Loader";
+import { redirect } from 'react-router-dom';
 import {
   Row,
   Col,
@@ -22,7 +23,12 @@ const SpecialTraining = () => {
         setData(response.data);
       })
       .catch(error => {
-        console.error('Errore nella richiesta API:', error);
+        if (error.response && error.response.status === 401) {
+          // Reindirizza l'utente alla pagina di login
+          window.location.href = '#/login?accesso=true';
+        }else{
+          console.error('Errore nella richiesta API:', error);
+        }
       })
       .finally(() => {
         setLoading(false); // Imposta lo stato di caricamento su false una volta completata la richiesta

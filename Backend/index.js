@@ -11,6 +11,27 @@ const { getRandomNumber, shuffleArray } = require('./utils');
 const userId=1;
 
 
+const authenticateUser = (req, res, next) => {
+  if (req.session && req.session.userId) {
+    // L'utente è autenticato, procedi all'endpoint successivo
+    next();
+  } else {
+    // L'utente non è autenticato, reindirizza alla pagina di login o restituisci un errore
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+};
+
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Imposta su true in produzione con HTTPS
+    maxAge: 1000 * 60 * 60 * 24 // 1 giorno
+  }
+}));
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -34,7 +55,7 @@ connection.connect((err) => {
 
 
 // Lista di pokemon base tra i primi 110+pichu 
-app.get('/api/pokemon', async (req, res) => {
+app.get('/api/pokemon',authenticateUser, async (req, res) => {
   try {
     const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=110');
     const pokemonList = await Promise.all(response.data.results.map(async pokemon => {
@@ -84,7 +105,7 @@ app.get('/api/pokemon', async (req, res) => {
 
 
 // Inserimento pokemon scelto dall'utente
-app.post('/api/pokemon', async (req, res) => {
+app.post('/api/pokemon',authenticateUser, async (req, res) => {
   const { pokemonId, userId } = req.query;
 
   try {
@@ -117,7 +138,7 @@ app.post('/api/pokemon', async (req, res) => {
 
 
 // Lista pokemon utente
-app.get('/api/pokedex', async (req, res) => {
+app.get('/api/pokedex',authenticateUser, async (req, res) => {
   const query = `SELECT * FROM pokemon WHERE Username_Utente = ?`;
   
   connection.query(query, [userId], async (error, results) => {
@@ -161,7 +182,7 @@ app.get('/api/pokedex', async (req, res) => {
 
 
 // Allenamento, quiz per migliorare il livello dei pokemon
-app.get('/api/allenamento', async (req, res) => {
+app.get('/api/allenamento',authenticateUser, async (req, res) => {
   try {
     const pokemon = await getRandomPokemon();
     const { name, sprites, types } = pokemon;
@@ -198,7 +219,7 @@ app.get('/api/allenamento', async (req, res) => {
 });
 
 
-app.post('/api/allenamento', async (req, res) => {
+app.post('/api/allenamento',authenticateUser, async (req, res) => {
   const { userId, answer, correctAnswer } = req.query;
   try {
     // Verifica se sono presenti l'ID del Pokémon e dell'utente
@@ -298,7 +319,7 @@ app.post('/api/allenamento', async (req, res) => {
 
 
 // Allenamento speciale, quiz per migliorare i pokemon rendendoli shiny
-app.get('/api/allenamentoSpeciale', async (req, res) => {
+app.get('/api/allenamentoSpeciale',authenticateUser, async (req, res) => {
   try {
     const pokemons = await getRandomPokemons(4);
     
@@ -326,7 +347,7 @@ app.get('/api/allenamentoSpeciale', async (req, res) => {
 });
 
 
-app.post('/api/allenamentoSpeciale', async (req, res) => {
+app.post('/api/allenamentoSpeciale',authenticateUser, async (req, res) => {
   const { userId, answer, correctAnswer } = req.query;
   try {
     // Verifica se sono presenti l'ID del Pokémon e dell'utente
@@ -393,6 +414,82 @@ app.post('/api/allenamentoSpeciale', async (req, res) => {
     console.error('Errore durante la gestione della risposta di allenamento:', error);
     res.status(500).json({ error: 'Errore durante la gestione della risposta di allenamento.' });
   }
+});
+
+app.post('/api/login', (req, res) => {
+  const { username, password } = req.body;
+
+  if (!username || !password) {
+    return res.status(400).json({ ok: false, message: 'Username and password are required' });
+  }
+
+  const query = 'SELECT * FROM utente WHERE Username = ? AND Password = ?';
+  connection.query(query, [username, password], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ ok: false, message: 'Database query failed' });
+    }
+
+    if (results.length > 0) {
+      // Salva lo username nella sessione
+      req.session.userId = username;
+      res.json({ ok: true, message: 'Login successful' });
+    } else {
+      res.json({ ok: false, message: 'Invalid username or password' });
+    }
+  });
+});
+
+app.post('/api/signup', (req, res) => {
+  const { name, email, password, confirmPassword } = req.body;
+
+  // Validazione di base
+  if (!name || !email || !password || !confirmPassword) {
+    return res.status(400).json({ ok: false, message: 'All fields are required' });
+  }
+
+  if (password !== confirmPassword) {
+    return res.status(400).json({ ok: false, message: 'Passwords do not match' });
+  }
+
+  // Controlla se l'utente è già registrato
+  connection.query('SELECT * FROM utente WHERE Username = ?', [name], (err, results) => {
+    if (err) {
+      console.error('Errore durante la verifica dell\'utente:', err);
+      return res.status(500).json({ ok: false, message: 'Database error' });
+    }
+
+    if (results.length > 0) {
+      return res.status(400).json({ ok: false, message: 'User already registered' });
+    }
+
+    // Registra il nuovo utente
+    const newUser = {
+      Username: name, // Considera il nome come username
+      Email: email,
+      Password: password
+    };
+
+    connection.query('INSERT INTO utente SET ?', newUser, (err, result) => {
+      if (err) {
+        console.error('Errore durante l\'inserimento del nuovo utente:', err);
+        return res.status(500).json({ ok: false, message: 'Database error' });
+      }
+
+      return res.status(201).json({ ok: true, message: 'User registered successfully' });
+    });
+  });
+});
+
+app.get('/api/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ ok: false, message: 'Logout failed' });
+    }
+
+    res.clearCookie('connect.sid');
+    res.json({ ok: true, message: 'Logout successful' });
+  });
 });
 
 

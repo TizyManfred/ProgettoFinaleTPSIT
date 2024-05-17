@@ -9,15 +9,12 @@ const FullLayout = lazy(() => import("../layouts/FullLayout.js"));
 const Starter = lazy(() => import("../views/Starter.js"));
 const About = lazy(() => import("../views/About.js"));
 const Training = lazy(() => import("../views/ui/Training"));
-const Badges = lazy(() => import("../views/ui/Badges"));
-const Buttons = lazy(() => import("../views/ui/Buttons"));
 const Pokemon = lazy(() => import("../views/ui/Pokemon"));
 const Pokedex = lazy(() => import("../views/ui/Pokedex"));
-const Grid = lazy(() => import("../views/ui/Grid"));
-const Tables = lazy(() => import("../views/ui/Tables"));
 const SpecialTraining = lazy(() => import("../views/ui/SpecialTraining"));
-const Breadcrumbs = lazy(() => import("../views/ui/Breadcrumbs"));
-
+const Login = lazy(() => import("../views/ui/Login"));
+const SignUp = lazy(() => import("../views/ui/SignUp"));
+const Logout = lazy(() => import("../views/ui/Logout"));
 /*****Routes******/
 
 const ThemeRoutes = [
@@ -32,6 +29,9 @@ const ThemeRoutes = [
       { path: "/pokemon", exact: true, element: <Pokemon /> },//pokemon
       { path: "/pokedex", exact: true, element: <Pokedex /> },//pokedex
       { path: "/allenamentoSpeciale", exact: true, element: <SpecialTraining/> },//allenamento speciale
+      { path: "/login", exact: true, element: <Login/> },//login
+      { path: "/signup", exact: true, element: <SignUp/> },//signup
+      { path: "/logout", exact: true, element: <Logout/> },//logout
     ],
   },
 ];

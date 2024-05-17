@@ -8,6 +8,7 @@ import {
   Button,
 } from "reactstrap";
 import axios from 'axios';
+import { redirect } from 'react-router-dom';
 
 const Training = () => {
   const [data, setData] = useState({});
@@ -20,7 +21,12 @@ const Training = () => {
         setData(response.data);
       })
       .catch(error => {
-        console.error('Errore nella richiesta API:', error);
+        if (error.response && error.response.status === 401) {
+          // Reindirizza l'utente alla pagina di login
+          window.location.href = '#/login?accesso=true';
+        }else{
+          console.error('Errore nella richiesta API:', error);
+        }
       });
   }, []);
 

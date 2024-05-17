@@ -1,0 +1,30 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+:root {
+  --main-color: #2962ff;
+  --secondary-color: #d7e3ef;
+  --box-shadow: 0 0 7px 0 var(--secondary-color);
+  --main-color-hover: #3169b1;
+}
+body {
+  color: #303030;
+  overflow-x: hidden;
+  background: #f8f9fa;
+}
+
+a {
+  text-decoration: none;
+  color: var(--main-color);
+  transition: all 0.3s ease-in-out;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -ms-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+}
+
+a:hover {
+  color: var(--main-color-hover);
+}

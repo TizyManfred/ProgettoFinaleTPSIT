@@ -18,9 +18,11 @@ import {
   import bg4 from "../../assets/images/bg/bg4.jpg";
   import axios from 'axios';
   import React, { useState, useEffect } from 'react';
+  import { redirect } from 'react-router-dom';
   const BlogData = [
   ];
-  
+ 
+
 
   const Pokedex = () => {
     const [data, setData] = useState([]);
@@ -32,7 +34,12 @@ import {
           setData(response.data);
         })
         .catch(error => {
-          console.error('Errore nella richiesta API:', error);
+          if (error.response && error.response.status === 401) {
+            // Reindirizza l'utente alla pagina di login
+            window.location.href = '#/login?accesso=true';
+          }else{
+            console.error('Errore nella richiesta API:', error);
+          }
         })
         .finally(() => {
         setLoading(false);
