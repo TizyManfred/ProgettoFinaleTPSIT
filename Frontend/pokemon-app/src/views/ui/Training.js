@@ -9,6 +9,7 @@ import {
 } from "reactstrap";
 import axios from 'axios';
 import { redirect } from 'react-router-dom';
+axios.defaults.withCredentials = true; 
 
 const Training = () => {
   const [data, setData] = useState({});

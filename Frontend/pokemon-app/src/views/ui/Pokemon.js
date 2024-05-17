@@ -20,7 +20,7 @@ import bg4 from "../../assets/images/bg/bg4.jpg";
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { redirect } from 'react-router-dom';
-
+axios.defaults.withCredentials = true; 
 
 const Pokemon = () => {
   const [data, setData] = useState([]);

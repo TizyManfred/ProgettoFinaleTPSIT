@@ -22,7 +22,7 @@ import {
   const BlogData = [
   ];
  
-
+  axios.defaults.withCredentials = true; 
 
   const Pokedex = () => {
     const [data, setData] = useState([]);

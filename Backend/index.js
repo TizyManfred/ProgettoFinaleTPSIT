@@ -9,28 +9,11 @@ const { getRandomPokemon, getPokemonMovesFromAPI, getEvolutionData, getPokemonDe
 const { connection, getPokemonListFromDB } = require('./database');
 const { getRandomNumber, shuffleArray } = require('./utils');
 const userId=1;
+const crypto = require('crypto'); // modulo crypto per generare una stringa casuale
+const cors = require('cors');
 
 
-const authenticateUser = (req, res, next) => {
-  if (req.session && req.session.userId) {
-    // L'utente è autenticato, procedi all'endpoint successivo
-    next();
-  } else {
-    // L'utente non è autenticato, reindirizza alla pagina di login o restituisci un errore
-    res.status(401).json({ error: 'Unauthorized' });
-  }
-};
-
-app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: false, // Imposta su true in produzione con HTTPS
-    maxAge: 1000 * 60 * 60 * 24 // 1 giorno
-  }
-}));
-
+const secret = crypto.randomBytes(32).toString('hex');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -42,6 +25,36 @@ app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization'); 
   next();
 });
+
+app.use(cors({
+  origin: 'http://localhost:3000', // Modifica con il dominio del tuo frontend
+  credentials: true // Importante per consentire l'invio dei cookie
+}));
+
+app.use(session({
+  secret: secret,
+  resave: false,
+  saveUninitialized: true,
+  cookie: {
+    path: '/',
+    httpOnly: true,
+    secure: false,  // Imposta su true in produzione se usi HTTPS
+    maxAge: 60000   // Durata della sessione in millisecondi
+  }}));
+
+
+// Il middleware authenticateUser dovrebbe essere configurato dopo il middleware per la gestione delle sessioni
+const authenticateUser = (req, res, next) => {
+  console.log(req.session)
+  
+  if (req.session && req.session.userId) {
+    // L'utente è autenticato, procedi all'endpoint successivo
+    next();
+  } else {
+    // L'utente non è autenticato, reindirizza alla pagina di login o restituisci un errore
+    res.status(401).json({ error: 'Unauthorized' });
+  }
+};
 
 
 // Connessione al database
@@ -86,7 +99,7 @@ app.get('/api/pokemon',authenticateUser, async (req, res) => {
     var pokemonListFromDB = ""; // Implementa questa funzione per ottenere la lista di Pokémon dal database
     
     try {
-      pokemonListFromDB = await getPokemonListFromDB(userId);
+      pokemonListFromDB = await getPokemonListFromDB(req.session.userId);
     } catch (error) {
       console.error('Errore:', error);
     }
@@ -106,12 +119,12 @@ app.get('/api/pokemon',authenticateUser, async (req, res) => {
 
 // Inserimento pokemon scelto dall'utente
 app.post('/api/pokemon',authenticateUser, async (req, res) => {
-  const { pokemonId, userId } = req.query;
+  const { pokemonId } = req.query;
 
   try {
     // Verifica se sono presenti l'ID del Pokémon e dell'utente
-    if (!pokemonId || !userId) {
-      return res.status(400).json({ success: false, message: "ID del Pokémon o dell'utente mancanti" });
+    if (!pokemonId) {
+      return res.status(400).json({ success: false, message: "ID del Pokémon mancante" });
     }
 
     // Ottieni i dettagli del Pokémon dall'API
@@ -122,7 +135,7 @@ app.post('/api/pokemon',authenticateUser, async (req, res) => {
       INSERT INTO pokemon (Id, Livello, Shiny, Mossa1, Mossa2, Mossa3, Mossa4, Username_Utente)
       VALUES (?, 1, 0, ?, ?, ?, ?, ?);
     `;
-    connection.query(insertQuery, [pokemonId, pokemonDetails.randomMoves[0], pokemonDetails.randomMoves[1], pokemonDetails.randomMoves[2], pokemonDetails.randomMoves[3], userId], (error, results, fields) => {
+    connection.query(insertQuery, [pokemonId, pokemonDetails.randomMoves[0], pokemonDetails.randomMoves[1], pokemonDetails.randomMoves[2], pokemonDetails.randomMoves[3], req.session.userId], (error, results, fields) => {
       if (error) {
         console.error('Errore durante l\'inserimento del nuovo Pokémon nel database:', error);
         return res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
@@ -141,7 +154,7 @@ app.post('/api/pokemon',authenticateUser, async (req, res) => {
 app.get('/api/pokedex',authenticateUser, async (req, res) => {
   const query = `SELECT * FROM pokemon WHERE Username_Utente = ?`;
   
-  connection.query(query, [userId], async (error, results) => {
+  connection.query(query, [req.session.userId], async (error, results) => {
     if (error) {
       console.error('Errore durante l\'esecuzione della query:', error);
       res.status(500).json({ error: 'Errore durante l\'esecuzione della query' });
@@ -220,22 +233,22 @@ app.get('/api/allenamento',authenticateUser, async (req, res) => {
 
 
 app.post('/api/allenamento',authenticateUser, async (req, res) => {
-  const { userId, answer, correctAnswer } = req.query;
+  const { answer, correctAnswer } = req.query;
   try {
     // Verifica se sono presenti l'ID del Pokémon e dell'utente
-    if (!answer || !userId || !correctAnswer) {
-      return res.status(400).json({ success: false, message: "ID dell'utente, risposta o risposta corretta mancanti" });
+    if (!answer || !correctAnswer) {
+      return res.status(400).json({ success: false, message: "Risposta o risposta corretta mancanti" });
     }
 
     if (answer === correctAnswer) {
       // Se la risposta è corretta, esegui una query per selezionare un Pokémon casuale
       const randomPokemonQuery = `
           SELECT * FROM pokemon
-          WHERE Username_Utente=${userId}
+          WHERE Username_Utente=?
           ORDER BY RAND()
           LIMIT 1;
       `;
-      connection.query(randomPokemonQuery, [], (error, results, fields) => {
+      connection.query(randomPokemonQuery, [req.session.userId], (error, results, fields) => {
           if (error) {
               console.error('Errore durante l\'inserimento del nuovo Pokémon nel database:', error);
               return res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
@@ -256,7 +269,7 @@ app.post('/api/allenamento',authenticateUser, async (req, res) => {
               SET Livello = ?
               WHERE Id = ? AND Username_Utente = ?;
           `;
-          var id=userId
+          var id=req.session.userId
           connection.query(updatePokemonQuery, [updatedLevel, randomPokemon.Id, id], async (error, result, fields) => {
               if (error) {
                   console.error('Errore durante l\'aggiornamento del livello del Pokémon:', error);
@@ -348,22 +361,22 @@ app.get('/api/allenamentoSpeciale',authenticateUser, async (req, res) => {
 
 
 app.post('/api/allenamentoSpeciale',authenticateUser, async (req, res) => {
-  const { userId, answer, correctAnswer } = req.query;
+  const { answer, correctAnswer } = req.query;
   try {
     // Verifica se sono presenti l'ID del Pokémon e dell'utente
-    if (!answer || !userId || !correctAnswer) {
-      return res.status(400).json({ success: false, message: "ID dell'utente, risposta o risposta corretta mancanti" });
+    if (!answer  || !correctAnswer) {
+      return res.status(400).json({ success: false, message: "Risposta o risposta corretta mancanti" });
     }
 
     if (answer === correctAnswer) {
       // Se la risposta è corretta, esegui una query per selezionare un Pokémon casuale
       const randomPokemonQuery = `
           SELECT * FROM pokemon
-          WHERE Shiny = 0 AND Username_Utente = ${userId}
+          WHERE Shiny = 0 AND Username_Utente = ?
           ORDER BY RAND()
           LIMIT 1;
       `;
-      connection.query(randomPokemonQuery, [], (error, results, fields) => {
+      connection.query(randomPokemonQuery, [req.session.userId], (error, results, fields) => {
           if (error) {
               console.error('Errore durante l\'inserimento del nuovo Pokémon nel database:', error);
               return res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
@@ -432,7 +445,9 @@ app.post('/api/login', (req, res) => {
 
     if (results.length > 0) {
       // Salva lo username nella sessione
+      console.log("username", username)
       req.session.userId = username;
+      console.log("session username", req.session.userId)
       res.json({ ok: true, message: 'Login successful' });
     } else {
       res.json({ ok: false, message: 'Invalid username or password' });

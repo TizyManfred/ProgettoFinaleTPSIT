@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import "./index.css";
 import { useLocation } from 'react-router-dom';
+axios.defaults.withCredentials = true; 
 
 
 // Funzione di validazione

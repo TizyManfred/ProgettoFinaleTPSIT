@@ -10,7 +10,7 @@ import {
   Button,
 } from "reactstrap";
 import axios from 'axios';
-
+axios.defaults.withCredentials = true; 
 const SpecialTraining = () => {
   const [data, setData] = useState({});
   const [selectedOption, setSelectedOption] = useState(null);

@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 // Axios
 import axios from "axios";
 import "./index.css";
+axios.defaults.withCredentials = true; 
 
 const SignUp = () => {
   const [data, setData] = useState({

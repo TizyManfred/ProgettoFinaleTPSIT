@@ -98,7 +98,7 @@ const Header = () => {
             <DropdownItem>Account</DropdownItem>
             <DropdownItem>Modifica profilo</DropdownItem>
             <DropdownItem divider />
-            <DropdownItem>Logout</DropdownItem>
+            <DropdownItem href="/#/logout">Logout </DropdownItem>
           </DropdownMenu>
         </Dropdown>
       </Collapse>
