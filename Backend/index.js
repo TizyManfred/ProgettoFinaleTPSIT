@@ -39,13 +39,12 @@ app.use(session({
     path: '/',
     httpOnly: true,
     secure: false,  // Imposta su true in produzione se usi HTTPS
-    maxAge: 60000   // Durata della sessione in millisecondi
+    maxAge: 86400000     // Durata della sessione in millisecondi
   }}));
 
 
 // Il middleware authenticateUser dovrebbe essere configurato dopo il middleware per la gestione delle sessioni
 const authenticateUser = (req, res, next) => {
-  console.log(req.session)
   
   if (req.session && req.session.userId) {
     // L'utente è autenticato, procedi all'endpoint successivo
@@ -398,7 +397,7 @@ app.post('/api/allenamentoSpeciale',authenticateUser, async (req, res) => {
               SET Shiny = 1
               WHERE Id = ? AND Username_Utente = ?;
           `;
-          var id=userId
+          var id=req.session.userId
           connection.query(updatePokemonQuery, [randomPokemon.Id, id], async (error, result, fields) => {
               if (error) {
                   console.error('Errore durante l\'aggiornamento shiny del Pokémon:', error);

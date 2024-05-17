@@ -8,6 +8,8 @@ import {
   CardTitle,
   Button,
 } from "reactstrap";
+import axios from "axios";
+axios.defaults.withCredentials = true; 
 
 const Blog = (props) => {
   const [avviso, setAvviso] = useState(null);
@@ -23,7 +25,7 @@ const Blog = (props) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }
+        },credentials: 'include',
       });
   
       const responseData = await response.json();

@@ -9,6 +9,9 @@ import {
   TabContent
 } from "reactstrap";
 import "./tab.css"
+import axios from "axios";
+axios.defaults.withCredentials = true; 
+
 const Blog = (props) => {
   return (
 
