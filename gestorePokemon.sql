@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Mag 14, 2024 alle 15:51
+-- Creato il: Mag 18, 2024 alle 13:18
 -- Versione del server: 10.4.27-MariaDB
 -- Versione PHP: 8.2.0
 
@@ -45,13 +45,16 @@ CREATE TABLE `pokemon` (
 --
 
 INSERT INTO `pokemon` (`Id`, `Livello`, `Shiny`, `Mossa1`, `Mossa2`, `Mossa3`, `Mossa4`, `Username_Utente`) VALUES
+(1, 3, 0, 'hidden-power', 'natural-gift', 'take-down', 'charm', 'gabbo'),
 (4, 35, 1, 'fire-spin', 'beat-up', 'crunch', 'swords-dance', '1'),
+(4, 1, 0, 'scratch', 'substitute', 'counter', 'headbutt', 'gabbo'),
 (7, 35, 1, 'weather-ball', 'skull-bash', 'rage', 'rock-tomb', '1'),
+(7, 2, 1, 'curse', 'return', 'bite', 'iron-tail', 'gabbo'),
 (21, 1, 1, 'detect', 'whirlwind', 'tri-attack', 'curse', '1'),
 (37, 22, 1, 'body-slam', 'reflect', 'hidden-power', 'encore', '1'),
 (41, 25, 1, 'twister', 'double-edge', 'snore', 'razor-wind', '1'),
-(72, 1, 0, 'bide', 'frustration', 'double-edge', 'aurora-beam', '1'),
-(74, 1, 0, 'magnitude', 'captivate', 'bulldoze', 'tera-blast', '1'),
+(72, 1, 1, 'bide', 'frustration', 'double-edge', 'aurora-beam', '1'),
+(74, 2, 1, 'magnitude', 'captivate', 'bulldoze', 'tera-blast', '1'),
 (74, 15, 0, 'sleep-talk', 'bulldoze', 'ancient-power', 'dynamic-punch', '2'),
 (172, 3, 1, 'thunder-punch', 'bestow', 'rollout', 'flail', '1');
 
@@ -71,9 +74,13 @@ CREATE TABLE `utente` (
 -- Dump dei dati per la tabella `utente`
 --
 
-INSERT INTO `utente` (`Username`, `Email`, `Nome`, `Cognome`, `DataDiNascita`, `Telefono`, `Residenza`, `Password`) VALUES
-('1', 'prova@gmail.com', 'Prova', 'Prova', '2024-05-09', '1234567890', 'Prova', 'Prova'),
-('2', 'prova1@gmail.com', 'Prova', 'Prova', '2024-05-09', '1234567890', 'Prova', 'Prova');
+INSERT INTO `utente` (`Username`, `Email`, `Password`) VALUES
+('1', 'prova@gmail.com', 'Prova'),
+('2', 'prova@gmail.com', 'Prova'),
+('gabbo', 'gabbo@gmail.com', '123456'),
+('marco', 'prova', '123456'),
+('Sami', 'sami@gmail.com', '123456'),
+('Tizi', 'tizi@gmail.com', '123456');
 
 --
 -- Indici per le tabelle scaricate
