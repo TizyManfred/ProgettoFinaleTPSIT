@@ -64,11 +64,6 @@ INSERT INTO `pokemon` (`Id`, `Livello`, `Shiny`, `Mossa1`, `Mossa2`, `Mossa3`, `
 CREATE TABLE `utente` (
   `Username` varchar(50) NOT NULL,
   `Email` varchar(50) DEFAULT NULL,
-  `Nome` varchar(50) DEFAULT NULL,
-  `Cognome` varchar(50) DEFAULT NULL,
-  `DataDiNascita` date DEFAULT NULL,
-  `Telefono` varchar(50) DEFAULT NULL,
-  `Residenza` varchar(50) DEFAULT NULL,
   `Password` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -78,7 +73,7 @@ CREATE TABLE `utente` (
 
 INSERT INTO `utente` (`Username`, `Email`, `Nome`, `Cognome`, `DataDiNascita`, `Telefono`, `Residenza`, `Password`) VALUES
 ('1', 'prova@gmail.com', 'Prova', 'Prova', '2024-05-09', '1234567890', 'Prova', 'Prova'),
-('2', 'prova@gmail.com', 'Prova', 'Prova', '2024-05-09', '1234567890', 'Prova', 'Prova');
+('2', 'prova1@gmail.com', 'Prova', 'Prova', '2024-05-09', '1234567890', 'Prova', 'Prova');
 
 --
 -- Indici per le tabelle scaricate
