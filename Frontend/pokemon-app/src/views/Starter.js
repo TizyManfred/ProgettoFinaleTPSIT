@@ -56,7 +56,7 @@ const Starter = () => {
             subtitle="Tutti i tuoi pokemon sono qui"
             earning="Pokèdex"
             icon="bi bi-box"
-            href="#/cards2"
+            href="#/pokedex"
           />
         </Col>
         <Col sm="6" lg="3">
@@ -66,7 +66,7 @@ const Starter = () => {
             subtitle="Cattura qui i tuoi pokemon"
             earning="Cattura pokemon"
             icon="bi bi-cart"
-            href="#/cards"
+            href="#/pokemon"
           />
         </Col>
         <Col sm="6" lg="3">
@@ -76,7 +76,7 @@ const Starter = () => {
             subtitle="Aumenta il livello dei pokemon"
             earning="Allenamento base"
             icon="bi bi-speedometer2"
-            href="#/alerts"
+            href="#/allenamento"
           />
         </Col>
         <Col sm="6" lg="3">
@@ -86,7 +86,7 @@ const Starter = () => {
             subtitle="Rendi il pokemon shiny"
             earning="Allenamento speciale"
             icon="bi bi-graph-up-arrow"
-            href="#/alerts2"
+            href="#/allenamentoSpeciale"
           />
         </Col>
       </Row>
