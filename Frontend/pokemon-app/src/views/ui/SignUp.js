@@ -81,7 +81,7 @@ const SignUp = () => {
         <h2>Sign Up</h2>
         <div>
           <div className={errors.name && touched.name ? styles.unCompleted : !errors.name && touched.name ? styles.completed : undefined}>
-            <input type="text" name="name" value={data.name} placeholder="Name" onChange={changeHandler} onFocus={focusHandler} autoComplete="off" />
+            <input type="text" name="name" value={data.name} placeholder="Username" onChange={changeHandler} onFocus={focusHandler} autoComplete="off" />
             <img src={userIcon} alt="" />
           </div>
           {errors.name && touched.name && <span className={styles.error}>{errors.name}</span>}
