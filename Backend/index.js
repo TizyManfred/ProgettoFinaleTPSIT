@@ -66,6 +66,55 @@ connection.connect((err) => {
   console.log('Connessione al database MySQL riuscita');
 });
 
+app.get('/api/pokemon', authenticateUser, async (req, res) => {
+  try {
+    // Ottieni la lista di Pokémon dal database
+    let pokemonListFromDB = [];
+    try {
+      pokemonListFromDB = await getPokemonListFromDB(req.session.userId);
+    } catch (error) {
+      console.error('Errore:', error);
+    }
+
+    // Calcola il limit e l'offset per la pagina corrente
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = 12;
+    const offset = (page - 1) * pageSize;
+    const limit = pageSize;
+
+    // Ottieni le catene evolutive con il limit e l'offset calcolati
+    const response = await axios.get(`https://pokeapi.co/api/v2/evolution-chain?limit=${limit}&offset=${offset}`);
+    const evolutionChains = await Promise.all(response.data.results.map(async chain => {
+      const chainData = await axios.get(chain.url);
+      return chainData.data;
+    }));
+
+    // Filtra i Pokémon base dalle catene evolutive
+    const pokemonBaseList = evolutionChains.map(chain => {
+      return chain.chain.species;
+    });
+
+    // Ottieni i dettagli dei Pokémon base
+    const pokemonList = await Promise.all(pokemonBaseList.map(async pokemon => {
+      const pokemonData = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`);
+      return {
+        id: pokemonData.data.id,
+        name: pokemon.name,
+        type: pokemonData.data.types[0].type.name,
+        imageUrl: pokemonData.data.sprites.front_default,
+        captured: pokemonListFromDB.includes(pokemonData.data.id)
+      };
+    }));
+
+    // Invia la lista di Pokémon al client
+    res.json(pokemonList);
+  } catch (error) {
+    console.error('Errore durante il recupero della lista dei Pokémon:', error);
+    res.status(500).json({ error: 'Errore durante il recupero dei dati.' });
+  }
+});
+
+/*
 app.get('/api/pokemon1', authenticateUser, async (req, res) => {
   try {
     // Ottieni le prime 110 catene evolutive
@@ -115,7 +164,7 @@ app.get('/api/pokemon1', authenticateUser, async (req, res) => {
 });
 
 // Lista di pokemon base tra i primi 110+pichu 
-app.get('/api/pokemon',authenticateUser, async (req, res) => {
+app.get('/api/pokemon0',authenticateUser, async (req, res) => {
   try {
     const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=110');
     const pokemonList = await Promise.all(response.data.results.map(async pokemon => {
@@ -162,7 +211,7 @@ app.get('/api/pokemon',authenticateUser, async (req, res) => {
     res.status(500).json({ error: 'Errore durante il recupero dei dati.' });
   }
 });
-
+*/
 
 // Inserimento pokemon scelto dall'utente
 app.post('/api/pokemon',authenticateUser, async (req, res) => {

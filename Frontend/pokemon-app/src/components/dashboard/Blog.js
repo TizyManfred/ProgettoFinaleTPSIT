@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Alert,
   Card,
@@ -14,18 +14,22 @@ axios.defaults.withCredentials = true;
 const Blog = (props) => {
   const [avviso, setAvviso] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [catturato, setCatturato] = useState(false);
-  var catturaStr="Cattura";
+  const [catturato, setCatturato] = useState(props.captured);
+  const [catturaStr, setCatturaStr] = useState(props.captured ? "Catturato" : "Cattura");
+
+  useEffect(() => {
+    setCatturato(props.captured);
+    setCatturaStr(props.captured ? "Catturato" : "Cattura");
+  }, [props.captured]);
+
   const inviaDati = async () => {
     try {
       setIsLoading(true);
-      setCatturato(true);
-      catturaStr="Catturato"
       const response = await fetch(`http://localhost:50000/api/pokemon?pokemonId=${props.pokemonId}&userId=${props.userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        },credentials: 'include',
+        }, credentials: 'include',
       });
   
       const responseData = await response.json();
@@ -35,6 +39,8 @@ const Blog = (props) => {
         setAvviso("Si è verificato un problema. Per favore, riprova più tardi.");
       } else {
         setAvviso("Richiesta completata con successo!");
+        setCatturato(true);
+        setCatturaStr("Catturato");
       }
     } catch (error) {
       console.error('Errore durante l\'invio dei dati:', error);
@@ -42,9 +48,10 @@ const Blog = (props) => {
         setAvviso("Impossibile connettersi al server. Controlla la tua connessione internet.");
       } else {
         setAvviso("Si è verificato un errore durante l'invio dei dati. Per favore, riprova più tardi.");
-      }catturato(false)
-      catturaStr="Cattura";
-    } finally{
+      }
+      setCatturato(false);
+      setCatturaStr("Cattura");
+    } finally {
       setIsLoading(false);
     }
   };

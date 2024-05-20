@@ -1,4 +1,3 @@
-//Pagina di Tiziano
 import {
   Card,
   CardImg,
@@ -13,21 +12,23 @@ import {
 } from "reactstrap";
 import Loader from "../../layouts/loader/Loader";
 import Blog from "../../components/dashboard/Blog";
-//import bg1 from "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png";
 import bg2 from "../../assets/images/bg/bg2.jpg";
 import bg3 from "../../assets/images/bg/bg3.jpg";
 import bg4 from "../../assets/images/bg/bg4.jpg";
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { redirect } from 'react-router-dom';
+import './button.css';
 axios.defaults.withCredentials = true; 
 
 const Pokemon = () => {
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true); // Aggiungi lo stato per il caricamento
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1); // Stato per la pagina corrente
 
-  useEffect(() => {
-    axios.get('http://localhost:50000/api/pokemon1')
+  const fetchData = (page) => {
+    setLoading(true);
+    axios.get(`http://localhost:50000/api/pokemon?page=${page}`)
       .then(response => {
         setData(response.data);
       })
@@ -35,22 +36,31 @@ const Pokemon = () => {
         if (error.response && error.response.status === 401) {
           // Reindirizza l'utente alla pagina di login
           window.location.href = '#/login?accesso=true';
-        }else{
+        } else {
           console.error('Errore nella richiesta API:', error);
         }
       })
       .finally(() => {
-        setLoading(false); // Imposta lo stato di caricamento su false una volta completata la richiesta
+        setLoading(false);
       });
-  }, []);
+  };
 
-  
+  useEffect(() => {
+    fetchData(page);
+  }, [page]);
+
+  const handleNextPage = () => {
+    setPage(prevPage => prevPage + 1);
+  };
+
+  const handlePreviousPage = () => {
+    setPage(prevPage => Math.max(prevPage - 1, 1));
+  };
 
   return (
     <div>
-      {/* Visualizza un messaggio di caricamento finché la richiesta è in corso */}
       {loading ? (
-        <Loader/>
+        <Loader />
       ) : (
         <div>
           <h1 className="mb-3">Cattura dei Pokémon</h1>
@@ -58,15 +68,23 @@ const Pokemon = () => {
             {data.map((blg, index) => (
               <Col sm="6" lg="6" xl="3" key={index}>
                 <Blog
-                  userId="1"
                   pokemonId={blg.id}
                   name={blg.name}
                   type={blg.type}
                   imageUrl={blg.imageUrl}
+                  captured={blg.captured}
                 />
               </Col>
             ))}
           </Row>
+          <div className="pagination">
+            <Button className='padding' color="primary" onClick={handlePreviousPage} disabled={page === 1}>
+              Indietro
+            </Button>
+            <Button className='padding' color="primary" onClick={handleNextPage} >
+              Avanti
+            </Button>
+          </div>
         </div>
       )}
     </div>

@@ -1,0 +1,10 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Spazio tra i pulsanti */
+    margin-top: 20px; /* Spazio sopra la paginazione */
+  }
+  
+  .pagination button {
+    padding: 10px 20px; /* Padding interno ai pulsanti */
+  }
