@@ -11,7 +11,8 @@ const { getRandomNumber, shuffleArray } = require('./utils');
 const userId=1;
 const crypto = require('crypto'); // modulo crypto per generare una stringa casuale
 const cors = require('cors');
-
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const secret = crypto.randomBytes(32).toString('hex');
 
@@ -428,6 +429,8 @@ app.post('/api/allenamentoSpeciale',authenticateUser, async (req, res) => {
   }
 });
 
+
+
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
 
@@ -435,21 +438,30 @@ app.post('/api/login', (req, res) => {
     return res.status(400).json({ ok: false, message: 'Username and password are required' });
   }
 
-  const query = 'SELECT * FROM utente WHERE Username = ? AND Password = ?';
-  connection.query(query, [username, password], (err, results) => {
+  const query = 'SELECT * FROM utente WHERE Username = ?';
+  connection.query(query, [username], (err, results) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ ok: false, message: 'Database query failed' });
     }
 
     if (results.length > 0) {
-      // Salva lo username nella sessione
-      console.log("username", username)
-      req.session.userId = username;
-      console.log("session username", req.session.userId)
-      res.json({ ok: true, message: 'Login successful' });
+      const user = results[0];
+      bcrypt.compare(password, user.Password, (err, isMatch) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ ok: false, message: 'Error comparing passwords' });
+        }
+
+        if (isMatch) {
+          req.session.userId = username;
+          res.json({ ok: true, message: 'Login successful' });
+        } else {
+          res.status(401).json({ ok: false, message: 'Invalid username or password' });
+        }
+      });
     } else {
-      res.json({ ok: false, message: 'Invalid username or password' });
+      res.status(401).json({ ok: false, message: 'Invalid username or password' });
     }
   });
 });
@@ -457,7 +469,6 @@ app.post('/api/login', (req, res) => {
 app.post('/api/signup', (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
 
-  // Validazione di base
   if (!name || !email || !password || !confirmPassword) {
     return res.status(400).json({ ok: false, message: 'All fields are required' });
   }
@@ -466,10 +477,9 @@ app.post('/api/signup', (req, res) => {
     return res.status(400).json({ ok: false, message: 'Passwords do not match' });
   }
 
-  // Controlla se l'utente è già registrato
   connection.query('SELECT * FROM utente WHERE Username = ?', [name], (err, results) => {
     if (err) {
-      console.error('Errore durante la verifica dell\'utente:', err);
+      console.error('Error checking user:', err);
       return res.status(500).json({ ok: false, message: 'Database error' });
     }
 
@@ -477,23 +487,30 @@ app.post('/api/signup', (req, res) => {
       return res.status(400).json({ ok: false, message: 'User already registered' });
     }
 
-    // Registra il nuovo utente
-    const newUser = {
-      Username: name, // Considera il nome come username
-      Email: email,
-      Password: password
-    };
-
-    connection.query('INSERT INTO utente SET ?', newUser, (err, result) => {
+    bcrypt.hash(password, saltRounds, (err, hash) => {
       if (err) {
-        console.error('Errore durante l\'inserimento del nuovo utente:', err);
-        return res.status(500).json({ ok: false, message: 'Database error' });
+        console.error('Error hashing password:', err);
+        return res.status(500).json({ ok: false, message: 'Error hashing password' });
       }
 
-      return res.status(201).json({ ok: true, message: 'User registered successfully' });
+      const newUser = {
+        Username: name,
+        Email: email,
+        Password: hash
+      };
+
+      connection.query('INSERT INTO utente SET ?', newUser, (err, result) => {
+        if (err) {
+          console.error('Error inserting new user:', err);
+          return res.status(500).json({ ok: false, message: 'Database error' });
+        }
+
+        return res.status(201).json({ ok: true, message: 'User registered successfully' });
+      });
     });
   });
 });
+
 
 app.get('/api/logout', (req, res) => {
   req.session.destroy((err) => {

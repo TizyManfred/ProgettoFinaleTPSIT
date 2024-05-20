@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Mag 18, 2024 alle 13:18
+-- Creato il: Mag 20, 2024 alle 15:21
 -- Versione del server: 10.4.27-MariaDB
 -- Versione PHP: 8.2.0
 
@@ -45,18 +45,18 @@ CREATE TABLE `pokemon` (
 --
 
 INSERT INTO `pokemon` (`Id`, `Livello`, `Shiny`, `Mossa1`, `Mossa2`, `Mossa3`, `Mossa4`, `Username_Utente`) VALUES
-(1, 3, 0, 'hidden-power', 'natural-gift', 'take-down', 'charm', 'gabbo'),
-(4, 35, 1, 'fire-spin', 'beat-up', 'crunch', 'swords-dance', '1'),
-(4, 1, 0, 'scratch', 'substitute', 'counter', 'headbutt', 'gabbo'),
-(7, 35, 1, 'weather-ball', 'skull-bash', 'rage', 'rock-tomb', '1'),
-(7, 2, 1, 'curse', 'return', 'bite', 'iron-tail', 'gabbo'),
-(21, 1, 1, 'detect', 'whirlwind', 'tri-attack', 'curse', '1'),
-(37, 22, 1, 'body-slam', 'reflect', 'hidden-power', 'encore', '1'),
-(41, 25, 1, 'twister', 'double-edge', 'snore', 'razor-wind', '1'),
-(72, 1, 1, 'bide', 'frustration', 'double-edge', 'aurora-beam', '1'),
-(74, 2, 1, 'magnitude', 'captivate', 'bulldoze', 'tera-blast', '1'),
-(74, 15, 0, 'sleep-talk', 'bulldoze', 'ancient-power', 'dynamic-punch', '2'),
-(172, 3, 1, 'thunder-punch', 'bestow', 'rollout', 'flail', '1');
+(1, 3, 0, 'hidden-power', 'natural-gift', 'take-down', 'charm', 'gabriele.chini'),
+(4, 1, 0, 'scratch', 'substitute', 'counter', 'headbutt', 'gabriele.chini'),
+(4, 35, 1, 'fire-spin', 'beat-up', 'crunch', 'swords-dance', 'utente1'),
+(7, 2, 1, 'curse', 'return', 'bite', 'iron-tail', 'gabriele.chini'),
+(7, 35, 1, 'weather-ball', 'skull-bash', 'rage', 'rock-tomb', 'utente1'),
+(21, 1, 1, 'detect', 'whirlwind', 'tri-attack', 'curse', 'utente1'),
+(37, 22, 1, 'body-slam', 'reflect', 'hidden-power', 'encore', 'utente1'),
+(41, 25, 1, 'twister', 'double-edge', 'snore', 'razor-wind', 'utente1'),
+(72, 1, 1, 'bide', 'frustration', 'double-edge', 'aurora-beam', 'utente1'),
+(74, 15, 0, 'sleep-talk', 'bulldoze', 'ancient-power', 'dynamic-punch', 'gabriele.chini'),
+(74, 2, 1, 'magnitude', 'captivate', 'bulldoze', 'tera-blast', 'utente1'),
+(172, 3, 1, 'thunder-punch', 'bestow', 'rollout', 'flail', 'utente1');
 
 -- --------------------------------------------------------
 
@@ -67,7 +67,7 @@ INSERT INTO `pokemon` (`Id`, `Livello`, `Shiny`, `Mossa1`, `Mossa2`, `Mossa3`, `
 CREATE TABLE `utente` (
   `Username` varchar(50) NOT NULL,
   `Email` varchar(50) DEFAULT NULL,
-  `Password` varchar(50) DEFAULT NULL
+  `Password` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -75,12 +75,8 @@ CREATE TABLE `utente` (
 --
 
 INSERT INTO `utente` (`Username`, `Email`, `Password`) VALUES
-('1', 'prova@gmail.com', 'Prova'),
-('2', 'prova@gmail.com', 'Prova'),
-('gabbo', 'gabbo@gmail.com', '123456'),
-('marco', 'prova', '123456'),
-('Sami', 'sami@gmail.com', '123456'),
-('Tizi', 'tizi@gmail.com', '123456');
+('gabriele.chini', 'gabriele.chini@gmail.com', '$2b$10$wzlz36wlFCkHAQWZbr.g5.JVlbrEFTXaXK/SSHGRo1mYWEpdP8TRK'),
+('utente1', 'utente1@gmail.com', '$2b$10$uPGyaU1B3kQtAZaq1CKV6eS0FdNSQ0jLfu6x3ZbGA6Yy3zvK6gAQi');
 
 --
 -- Indici per le tabelle scaricate
