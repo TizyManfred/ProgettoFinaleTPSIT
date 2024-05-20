@@ -27,7 +27,7 @@ const Pokemon = () => {
   const [loading, setLoading] = useState(true); // Aggiungi lo stato per il caricamento
 
   useEffect(() => {
-    axios.get('http://localhost:50000/api/pokemon')
+    axios.get('http://localhost:50000/api/pokemon1')
       .then(response => {
         setData(response.data);
       })
