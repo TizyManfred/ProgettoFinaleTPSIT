@@ -94,10 +94,6 @@ const Header = () => {
             ></img>
           </DropdownToggle>
           <DropdownMenu>
-            <DropdownItem header>Info</DropdownItem>
-            <DropdownItem>Account</DropdownItem>
-            <DropdownItem>Modifica profilo</DropdownItem>
-            <DropdownItem divider />
             <DropdownItem href="/#/logout">Logout </DropdownItem>
           </DropdownMenu>
         </Dropdown>
