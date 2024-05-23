@@ -57,10 +57,10 @@ const Login = () => {
       if (response.data.ok) {
         //notify("You logged in to your account successfully", "success");
       } else {
-        notify("Your username or password is incorrect", "error");
+        //notify("Your username or password is incorrect", "error");
       }
     } catch (error) {
-      notify("Something went wrong!", "error");
+      //notify("Something went wrong!", "error");
     }
   };
 

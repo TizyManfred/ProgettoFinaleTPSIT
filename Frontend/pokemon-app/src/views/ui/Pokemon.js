@@ -1,30 +1,21 @@
-import {
-  Card,
-  CardImg,
-  CardText,
-  CardBody,
-  CardTitle,
-  CardSubtitle,
-  CardGroup,
-  Button,
-  Row,
-  Col,
-} from "reactstrap";
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Button, Input } from 'reactstrap';
 import Loader from "../../layouts/loader/Loader";
 import Blog from "../../components/dashboard/Blog";
-import bg2 from "../../assets/images/bg/bg2.jpg";
-import bg3 from "../../assets/images/bg/bg3.jpg";
-import bg4 from "../../assets/images/bg/bg4.jpg";
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
-import { redirect } from 'react-router-dom';
 import './button.css';
-axios.defaults.withCredentials = true; 
+
+axios.defaults.withCredentials = true;
+
+const TOTAL_POKEMONS = 541;
+const POKEMONS_PER_PAGE = 12;
+const MAX_PAGES = Math.ceil(TOTAL_POKEMONS / POKEMONS_PER_PAGE);
 
 const Pokemon = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1); // Stato per la pagina corrente
+  const [page, setPage] = useState(1);
+  const [inputPage, setInputPage] = useState(page);
 
   const fetchData = (page) => {
     setLoading(true);
@@ -34,7 +25,6 @@ const Pokemon = () => {
       })
       .catch(error => {
         if (error.response && error.response.status === 401) {
-          // Reindirizza l'utente alla pagina di login
           window.location.href = '#/login?accesso=true';
         } else {
           console.error('Errore nella richiesta API:', error);
@@ -50,11 +40,29 @@ const Pokemon = () => {
   }, [page]);
 
   const handleNextPage = () => {
-    setPage(prevPage => prevPage + 1);
+    if (page < MAX_PAGES) {
+      setPage(prevPage => prevPage + 1);
+      setInputPage(prevPage => prevPage + 1);
+    }
   };
 
   const handlePreviousPage = () => {
-    setPage(prevPage => Math.max(prevPage - 1, 1));
+    if (page > 1) {
+      setPage(prevPage => prevPage - 1);
+      setInputPage(prevPage => prevPage - 1);
+    }
+  };
+
+  const handlePageInputChange = (e) => {
+    let value = parseInt(e.target.value, 10);
+    value = isNaN(value) ? 1 : Math.min(Math.max(value, 1), MAX_PAGES);
+    setInputPage(value);
+  };
+
+  const handlePageInputKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      setPage(inputPage);
+    }
   };
 
   return (
@@ -79,10 +87,17 @@ const Pokemon = () => {
           </Row>
           <div className="pagination">
             <Button className='padding' color="primary" onClick={handlePreviousPage} disabled={page === 1}>
-              Indietro
+            <i class="bi bi-arrow-left-circle"></i>
             </Button>
-            <Button className='padding' color="primary" onClick={handleNextPage} >
-              Avanti
+            <Input
+              type="number"
+              value={inputPage}
+              onChange={handlePageInputChange}
+              onKeyPress={handlePageInputKeyPress}
+              style={{ width: '70px', display: 'inline-block', margin: '0 10px', fontSize: '16px' }}
+            />
+            <Button className='padding' color="primary" onClick={handleNextPage} disabled={page === MAX_PAGES}>
+            <i class="bi bi-arrow-right-circle"></i>
             </Button>
           </div>
         </div>
