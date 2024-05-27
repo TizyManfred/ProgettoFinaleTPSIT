@@ -96,15 +96,32 @@ app.get('/api/pokemon', authenticateUser, async (req, res) => {
 
     // Ottieni i dettagli dei Pokémon base
     const pokemonList = await Promise.all(pokemonBaseList.map(async pokemon => {
-      const pokemonData = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`);
-      return {
-        id: pokemonData.data.id,
-        name: pokemon.name,
-        type: pokemonData.data.types[0].type.name,
-        imageUrl: pokemonData.data.sprites.front_default,
-        captured: pokemonListFromDB.includes(pokemonData.data.id)
-      };
-    }));
+      try {
+        const pokemonData = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemon.name}`);
+        return {
+          id: pokemonData.data.id,
+          name: pokemon.name,
+          type: pokemonData.data.types[0].type.name,
+          imageUrl: pokemonData.data.sprites.front_default,
+          captured: pokemonListFromDB.includes(pokemonData.data.id)
+        };
+      } catch {
+        try {
+          const speciesData = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${pokemon.name}`);
+          const firstVersionUrl = speciesData.data.varieties[0].pokemon.url;
+          const firstVersionData = await axios.get(firstVersionUrl);
+          return {
+            id: firstVersionData.data.id,
+            name: pokemon.name,
+            type: firstVersionData.data.types[0].type.name,
+            imageUrl: firstVersionData.data.sprites.front_default,
+            captured: pokemonListFromDB.includes(firstVersionData.data.id)
+          };
+        } catch {
+          return null;
+        }
+      }
+    })).then(results => results.filter(pokemon => pokemon !== null));
 
     // Invia la lista di Pokémon al client
     res.json(pokemonList);
@@ -214,30 +231,49 @@ app.get('/api/pokemon0',authenticateUser, async (req, res) => {
 */
 
 // Inserimento pokemon scelto dall'utente
-app.post('/api/pokemon',authenticateUser, async (req, res) => {
+app.post('/api/pokemon', authenticateUser, async (req, res) => {
   const { pokemonId } = req.query;
-
+  const MAX_CAPTURED_POKEMON = 20; // Numero massimo di Pokémon catturabili
   try {
     // Verifica se sono presenti l'ID del Pokémon e dell'utente
     if (!pokemonId) {
-      return res.status(400).json({ success: false, message: "ID del Pokémon mancante" });
+      return res.status(400).json({ success: false, error: "MISSING_POKEMON_ID", message: "ID del Pokémon mancante" });
     }
 
-    // Ottieni i dettagli del Pokémon dall'API
-    const pokemonDetails = await getPokemonMovesFromAPI(pokemonId);
-
-    // Inserisci il nuovo Pokémon nel database per l'utente specificato
-    const insertQuery = `
-      INSERT INTO pokemon (Id, Livello, Shiny, Mossa1, Mossa2, Mossa3, Mossa4, Username_Utente)
-      VALUES (?, 1, 0, ?, ?, ?, ?, ?);
+    // Verifica il numero massimo di Pokémon catturati dall'utente
+    const capturedPokemonQuery = `
+      SELECT COUNT(*) AS capturedCount 
+      FROM pokemon 
+      WHERE Username_Utente = ?;
     `;
-    connection.query(insertQuery, [pokemonId, pokemonDetails.randomMoves[0], pokemonDetails.randomMoves[1], pokemonDetails.randomMoves[2], pokemonDetails.randomMoves[3], req.session.userId], (error, results, fields) => {
+    connection.query(capturedPokemonQuery, [req.session.userId], async (error, results) => {
       if (error) {
-        console.error('Errore durante l\'inserimento del nuovo Pokémon nel database:', error);
-        return res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
+        console.error('Errore durante il recupero del conteggio dei Pokémon catturati:', error);
+        return res.status(500).json({ error: 'Errore durante il recupero del conteggio dei Pokémon catturati.' });
       }
-      console.log('Nuovo Pokémon aggiunto al database.');
-      res.json({ success: true });
+      
+      const capturedCount = results[0].capturedCount;
+      
+      if (capturedCount >= MAX_CAPTURED_POKEMON) {
+        return res.status(400).json({ success: false, error: "MAX_POKEMON_REACHED", message: "Hai raggiunto il limite massimo di Pokémon catturabili." });
+      }
+
+      // Ottieni i dettagli del Pokémon dall'API
+      const pokemonDetails = await getPokemonMovesFromAPI(pokemonId);
+
+      // Inserisci il nuovo Pokémon nel database per l'utente specificato
+      const insertQuery = `
+        INSERT INTO pokemon (Id, Livello, Shiny, Mossa1, Mossa2, Mossa3, Mossa4, Username_Utente)
+        VALUES (?, 1, 0, ?, ?, ?, ?, ?);
+      `;
+      connection.query(insertQuery, [pokemonId, pokemonDetails.randomMoves[0], pokemonDetails.randomMoves[1], pokemonDetails.randomMoves[2], pokemonDetails.randomMoves[3], req.session.userId], (error, results, fields) => {
+        if (error) {
+          console.error('Errore durante l\'inserimento del nuovo Pokémon nel database:', error);
+          return res.status(500).json({ error: 'Errore durante l\'inserimento del nuovo Pokémon nel database.' });
+        }
+        console.log('Nuovo Pokémon aggiunto al database.');
+        res.json({ success: true });
+      });
     });
   } catch (error) {
     console.error('Errore durante l\'aggiunta del nuovo Pokémon:', error);
@@ -246,6 +282,7 @@ app.post('/api/pokemon',authenticateUser, async (req, res) => {
 });
 
 
+/*
 // Lista pokemon utente
 app.get('/api/pokedex',authenticateUser, async (req, res) => {
   const query = `SELECT * FROM pokemon WHERE Username_Utente = ?`;
@@ -288,7 +325,103 @@ app.get('/api/pokedex',authenticateUser, async (req, res) => {
     res.json(pokemonData);
   });
 });
+*/
 
+app.get('/api/pokedex', authenticateUser, async (req, res) => {
+  const query = `SELECT * FROM pokemon WHERE Username_Utente = ?`;
+
+  connection.query(query, [req.session.userId], async (error, results) => {
+    if (error) {
+      console.error('Errore durante l\'esecuzione della query:', error);
+      res.status(500).json({ error: 'Errore durante l\'esecuzione della query' });
+      return;
+    }
+    
+    const pokemonData = await Promise.all(results.map(async pokemon => {
+      const evolution = await getEvolutionData(pokemon.Id);
+      let pokemonName = evolution.firstEvolution;
+      
+      if (pokemon.Livello >= 16 && evolution.secondEvolution !== null) {
+        pokemonName = evolution.secondEvolution;
+      }
+      
+      if (pokemon.Livello >= 32 && evolution.thirdEvolution !== null) {
+        pokemonName = evolution.thirdEvolution;
+      }
+
+      const pokemonDetails = await getPokemonDetails(pokemonName);
+      if (!pokemonDetails) {
+        console.error(`Dettagli non trovati per il Pokémon: ${pokemonName}`);
+        return null;
+      }
+
+      const imageUrl = pokemon.Shiny === 1 ? pokemonDetails.imageShiny : pokemonDetails.imageUrl;
+      const isShiny = pokemon.Shiny === 1 ? "Shiny" : "Not shiny";
+
+      return {
+        id: pokemonDetails.id,
+        name: pokemonName,
+        type: pokemonDetails.type,
+        level: pokemon.Livello,
+        imageUrl: imageUrl,
+        ability1: pokemon.Mossa1,
+        ability2: pokemon.Mossa2,
+        ability3: pokemon.Mossa3,
+        ability4: pokemon.Mossa4,
+        shiny: isShiny
+      };
+    }));
+
+    // Filtra eventuali null (Pokémon non trovati)
+    const validPokemonData = pokemonData.filter(pokemon => pokemon !== null);
+
+    // Invia i risultati della query come risposta JSON
+    res.json(validPokemonData);
+  });
+});
+
+// Rilascio del Pokémon scelto dall'utente
+app.delete('/api/pokemon', authenticateUser, async (req, res) => {
+  const { pokemonId } = req.query;
+
+  try {
+    // Verifica se sono presenti l'ID del Pokémon e dell'utente
+    if (!pokemonId) {
+      return res.status(400).json({ success: false, message: "ID del Pokémon mancante" });
+    }
+
+    // Verifica se il Pokémon esiste nel database per l'utente specificato
+    const checkQuery = `
+      SELECT * FROM pokemon WHERE Id = ? AND Username_Utente = ?;
+    `;
+    connection.query(checkQuery, [pokemonId, req.session.userId], (error, results) => {
+      if (error) {
+        console.error('Errore durante la verifica del Pokémon nel database:', error);
+        return res.status(500).json({ error: 'Errore durante la verifica del Pokémon nel database.' });
+      }
+
+      if (results.length === 0) {
+        return res.status(404).json({ success: false, message: "Pokémon non trovato." });
+      }
+
+      // Elimina il Pokémon dal database per l'utente specificato
+      const deleteQuery = `
+        DELETE FROM pokemon WHERE Id = ? AND Username_Utente = ?;
+      `;
+      connection.query(deleteQuery, [pokemonId, req.session.userId], (error, results) => {
+        if (error) {
+          console.error('Errore durante l\'eliminazione del Pokémon dal database:', error);
+          return res.status(500).json({ error: 'Errore durante l\'eliminazione del Pokémon dal database.' });
+        }
+        console.log('Pokémon rilasciato dal database.');
+        res.json({ success: true });
+      });
+    });
+  } catch (error) {
+    console.error('Errore durante il rilascio del Pokémon:', error);
+    res.status(500).json({ error: 'Errore durante il rilascio del Pokémon.' });
+  }
+});
 
 // Allenamento, quiz per migliorare il livello dei pokemon
 app.get('/api/allenamento',authenticateUser, async (req, res) => {

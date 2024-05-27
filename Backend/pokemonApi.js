@@ -85,31 +85,59 @@ async function getEvolutionData(basePokemonId) {
     }
   }
 
-async function getPokemonDetails(pokemonId) {
+
+  async function getPokemonDetails(pokemonName) {
     try {
-        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
-        const pokemonData = response.data;
+      // Prova a ottenere i dettagli del Pokémon direttamente
+      const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`);
+      const pokemonData = response.data;
   
-        const imageShiny = pokemonData.sprites.front_shiny;
-        const imageUrl = pokemonData.sprites.front_default;
+      const imageShiny = pokemonData.sprites.front_shiny;
+      const imageUrl = pokemonData.sprites.front_default;
+      const name = pokemonData.name;
+      const id = pokemonData.id;
+      const type = pokemonData.types[0].type.name;
   
-        const name = pokemonData.name;
-        const id = pokemonData.id;
-  
-        const type = pokemonData.types[0].type.name;
-        
-        return {
-            id: id,
-            imageShiny: imageShiny,
-            imageUrl: imageUrl,
-            name: name,
-            type: type
-        };
+      return {
+        id: id,
+        imageShiny: imageShiny,
+        imageUrl: imageUrl,
+        name: name,
+        type: type
+      };
     } catch (error) {
-        console.error("Error fetching Pokémon details:", error);
+      console.warn(`Direct fetch failed for ${pokemonName}, trying species endpoint`);
+  
+      try {
+        // Se fallisce, prova a ottenere i dettagli della specie
+        const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`);
+        const speciesData = speciesResponse.data;
+  
+        // Prendi la prima varietà disponibile
+        const firstVersionUrl = speciesData.varieties[0].pokemon.url;
+        const firstVersionResponse = await axios.get(firstVersionUrl);
+        const firstVersionData = firstVersionResponse.data;
+  
+        const imageShiny = firstVersionData.sprites.front_shiny;
+        const imageUrl = firstVersionData.sprites.front_default;
+        const name = firstVersionData.name;
+        const id = firstVersionData.id;
+        const type = firstVersionData.types[0].type.name;
+  
+        return {
+          id: id,
+          imageShiny: imageShiny,
+          imageUrl: imageUrl,
+          name: name,
+          type: type
+        };
+      } catch (speciesError) {
+        console.error(`Error fetching species details for ${pokemonName}:`, speciesError);
         return null;
+      }
     }
   }
+  
 
 // pokemonApi.js
 async function getRandomPokemons(count) {

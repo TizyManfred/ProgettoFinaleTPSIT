@@ -42,14 +42,14 @@ const Pokemon = () => {
   const handleNextPage = () => {
     if (page < MAX_PAGES) {
       setPage(prevPage => prevPage + 1);
-      setInputPage(prevPage => prevPage + 1);
+      setInputPage(page + 1);
     }
   };
 
   const handlePreviousPage = () => {
     if (page > 1) {
       setPage(prevPage => prevPage - 1);
-      setInputPage(prevPage => prevPage - 1);
+      setInputPage(page - 1);
     }
   };
 

@@ -27,6 +27,8 @@ const Blog = (props) => {
         <CardSubtitle>     <i className="bi bi-arrow-return-right tab"></i> {props.ability2}</CardSubtitle>
         <CardSubtitle>     <i className="bi bi-arrow-return-right tab"></i> {props.ability3}</CardSubtitle>
         <CardSubtitle>     <i className="bi bi-arrow-return-right tab"></i> {props.ability4}</CardSubtitle>
+
+        <Button color="danger" onClick={props.onRelease}>Rilascia</Button>
       </CardBody>
     </Card>
   );

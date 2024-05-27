@@ -7,6 +7,7 @@ import {
   CardSubtitle,
   CardTitle,
   Button,
+  Modal, ModalHeader, ModalBody, ModalFooter
 } from "reactstrap";
 import axios from "axios";
 axios.defaults.withCredentials = true; 
@@ -16,6 +17,9 @@ const Blog = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [catturato, setCatturato] = useState(props.captured);
   const [catturaStr, setCatturaStr] = useState(props.captured ? "Catturato" : "Cattura");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalColor, setModalColor] = useState('');
 
   useEffect(() => {
     setCatturato(props.captured);
@@ -36,27 +40,32 @@ const Blog = (props) => {
       console.log(responseData); // Log della risposta dal backend
   
       if (!responseData.success) {
-        setAvviso("Si è verificato un problema. Per favore, riprova più tardi.");
+        if (responseData.error === "MAX_POKEMON_REACHED") {
+          setModalMessage(responseData.message);
+        } else {
+          setModalMessage("Si è verificato un problema. Per favore, riprova più tardi.");
+        }
+        setModalColor("danger");
       } else {
-        setAvviso("Richiesta completata con successo!");
+        setModalMessage("Pokémon catturato con successo!");
+        setModalColor("success");
         setCatturato(true);
         setCatturaStr("Catturato");
       }
+      setModalOpen(true);
     } catch (error) {
       console.error('Errore durante l\'invio dei dati:', error);
-      if (error instanceof TypeError) {
-        setAvviso("Impossibile connettersi al server. Controlla la tua connessione internet.");
-      } else {
-        setAvviso("Si è verificato un errore durante l'invio dei dati. Per favore, riprova più tardi.");
-      }
-      setCatturato(false);
-      setCatturaStr("Cattura");
+      setModalMessage("Si è verificato un errore durante l'invio dei dati. Per favore, riprova più tardi.");
+      setModalColor("danger");
+      setModalOpen(true);
     } finally {
       setIsLoading(false);
     }
   };
-
+  
+  
   return (
+    
     <Card>
       <CardImg alt="Card image cap" src={props.imageUrl} />
       <CardBody className="p-4">
@@ -68,7 +77,21 @@ const Blog = (props) => {
           <Alert color={avviso.includes("successo") ? "success" : "danger"}>{avviso}</Alert>
         )}
       </CardBody>
+          <Modal isOpen={modalOpen} toggle={() => setModalOpen(!modalOpen)}>
+      <ModalHeader toggle={() => setModalOpen(!modalOpen)}>Messaggio</ModalHeader>
+      <ModalBody>
+        <Alert color={modalColor}>
+          {modalMessage}
+        </Alert>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="primary" onClick={() => setModalOpen(!modalOpen)}>Chiudi</Button>
+      </ModalFooter>
+    </Modal>
+
     </Card>
+    
+  
   );
 };
 
