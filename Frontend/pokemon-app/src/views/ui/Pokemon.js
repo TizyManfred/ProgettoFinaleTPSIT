@@ -39,6 +39,22 @@ const Pokemon = () => {
     fetchData(page);
   }, [page]);
 
+  useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.key === 'ArrowLeft') {
+        handlePreviousPage();
+      } else if (event.key === 'ArrowRight') {
+        handleNextPage();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [page]); // Aggiunta 'page' come dipendenza per ricaricare l'effetto quando la pagina cambia
+
   const handleNextPage = () => {
     if (page < MAX_PAGES) {
       setPage(prevPage => prevPage + 1);
@@ -87,7 +103,7 @@ const Pokemon = () => {
           </Row>
           <div className="pagination">
             <Button className='padding' color="primary" onClick={handlePreviousPage} disabled={page === 1}>
-            <i class="bi bi-arrow-left-circle"></i>
+              <i className="bi bi-arrow-left-circle"></i>
             </Button>
             <Input
               type="number"
@@ -97,7 +113,7 @@ const Pokemon = () => {
               style={{ width: '70px', display: 'inline-block', margin: '0 10px', fontSize: '16px' }}
             />
             <Button className='padding' color="primary" onClick={handleNextPage} disabled={page === MAX_PAGES}>
-            <i class="bi bi-arrow-right-circle"></i>
+              <i className="bi bi-arrow-right-circle"></i>
             </Button>
           </div>
         </div>

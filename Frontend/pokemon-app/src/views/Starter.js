@@ -52,9 +52,9 @@ const Starter = () => {
         <Col sm="6" lg="3">
           <TopCards
             bg="bg-light-success text-success"
-            title="Pokèdex"
+            title="Visualizza pokèdex"
             subtitle="Tutti i tuoi pokemon sono qui"
-            earning="Pokèdex"
+            earning="Visualizza pokèdex"
             icon="bi bi-box"
             href="#/pokedex"
           />
@@ -73,7 +73,7 @@ const Starter = () => {
           <TopCards
             bg="bg-light-warning text-warning"
             title="Allenamento base"
-            subtitle="Aumenta il livello dei pokemon"
+            subtitle="Aumenta livello pokemon"
             earning="Allenamento base"
             icon="bi bi-speedometer2"
             href="#/allenamento"
