@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Mag 20, 2024 alle 15:21
+-- Creato il: Mag 28, 2024 alle 21:52
 -- Versione del server: 10.4.27-MariaDB
 -- Versione PHP: 8.2.0
 
@@ -45,18 +45,22 @@ CREATE TABLE `pokemon` (
 --
 
 INSERT INTO `pokemon` (`Id`, `Livello`, `Shiny`, `Mossa1`, `Mossa2`, `Mossa3`, `Mossa4`, `Username_Utente`) VALUES
-(1, 3, 0, 'hidden-power', 'natural-gift', 'take-down', 'charm', 'gabriele.chini'),
-(4, 1, 0, 'scratch', 'substitute', 'counter', 'headbutt', 'gabriele.chini'),
-(4, 35, 1, 'fire-spin', 'beat-up', 'crunch', 'swords-dance', 'utente1'),
-(7, 2, 1, 'curse', 'return', 'bite', 'iron-tail', 'gabriele.chini'),
-(7, 35, 1, 'weather-ball', 'skull-bash', 'rage', 'rock-tomb', 'utente1'),
-(21, 1, 1, 'detect', 'whirlwind', 'tri-attack', 'curse', 'utente1'),
-(37, 22, 1, 'body-slam', 'reflect', 'hidden-power', 'encore', 'utente1'),
-(41, 25, 1, 'twister', 'double-edge', 'snore', 'razor-wind', 'utente1'),
-(72, 1, 1, 'bide', 'frustration', 'double-edge', 'aurora-beam', 'utente1'),
-(74, 15, 0, 'sleep-talk', 'bulldoze', 'ancient-power', 'dynamic-punch', 'gabriele.chini'),
-(74, 2, 1, 'magnitude', 'captivate', 'bulldoze', 'tera-blast', 'utente1'),
-(172, 3, 1, 'thunder-punch', 'bestow', 'rollout', 'flail', 'utente1');
+(1, 1, 0, 'razor-wind', 'grassy-glide', 'flash', 'headbutt', 'max.fedrizzi'),
+(4, 2, 0, 'defense-curl', 'metal-claw', 'body-slam', 'mega-kick', 'gabriele.chini'),
+(7, 1, 0, 'rollout', 'aqua-ring', 'foresight', 'withdraw', 'gabriele.chini'),
+(37, 1, 0, 'tail-whip', 'curse', 'endure', 'frustration', 'sami.facchinelli'),
+(50, 1, 0, 'rock-blast', 'confide', 'ancient-power', 'fissure', 'sami.facchinelli'),
+(56, 1, 0, 'metronome', 'rock-smash', 'bide', 'covet', 'sami.facchinelli'),
+(172, 1, 0, 'defense-curl', 'round', 'reflect', 'flail', 'max.fedrizzi'),
+(287, 3, 0, 'x-scissor', 'chilling-water', 'slack-off', 'after-you', 'gabriele.chini'),
+(357, 1, 0, 'earthquake', 'trailblaze', 'bulldoze', 'silver-wind', 'tiziano.manfredi'),
+(501, 33, 0, 'sleep-talk', 'confide', 'return', 'tackle', 'gabriele.chini'),
+(647, 1, 0, 'giga-impact', 'megahorn', 'swift', 'sunny-day', 'tiziano.manfredi'),
+(650, 1, 0, 'rock-smash', 'thunder-punch', 'toxic', 'wood-hammer', 'tiziano.manfredi'),
+(659, 1, 0, 'iron-head', 'hidden-power', 'return', 'work-up', 'tiziano.manfredi'),
+(906, 1, 0, 'facade', 'bite', 'play-rough', 'tail-whip', 'tiziano.manfredi'),
+(960, 1, 0, 'water-gun', 'substitute', 'take-down', 'muddy-water', 'tiziano.manfredi'),
+(1007, 1, 0, 'endure', 'u-turn', 'ancient-power', 'agility', 'sami.facchinelli');
 
 -- --------------------------------------------------------
 
@@ -76,7 +80,10 @@ CREATE TABLE `utente` (
 
 INSERT INTO `utente` (`Username`, `Email`, `Password`) VALUES
 ('gabriele.chini', 'gabriele.chini@gmail.com', '$2b$10$wzlz36wlFCkHAQWZbr.g5.JVlbrEFTXaXK/SSHGRo1mYWEpdP8TRK'),
-('utente1', 'utente1@gmail.com', '$2b$10$uPGyaU1B3kQtAZaq1CKV6eS0FdNSQ0jLfu6x3ZbGA6Yy3zvK6gAQi');
+('max.fedrizzi', 'max.fedrizzi@gmail.com', '$2b$10$Bjjwq8HhdrI.AARci40b3uo2BuqxEFZTx3oWb7N0X5hDnkQKN/eBy'),
+('sami.facchinelli', 'sami.facchinelli@gmail.com', '$2b$10$QsxihGmmdt0aPf67ujLtt.SRWzYdUomU2qTHepEbXwsRYFsHN7dHS'),
+('tiziano.manfredi', 'tiziano.manfredi@gmail.com', '$2b$10$AOrQFzILqR3o.HU3c6tEA.uH3vTIPwXzqbAnoPsk2RnIivhQa4cqG'),
+('user', 'user@gmail.com', '$2b$10$xGIO0a6wvlLij9ACCDxmK.DOzgzMA1K9nkaf9pTRiaC/DNeZlrj2i');
 
 --
 -- Indici per le tabelle scaricate
