@@ -23,7 +23,6 @@ const Training = () => {
       })
       .catch(error => {
         if (error.response && error.response.status === 401) {
-          // Reindirizza l'utente alla pagina di login
           window.location.href = '#/login?accesso=true';
         }else{
           console.error('Errore nella richiesta API:', error);
@@ -57,7 +56,7 @@ const Training = () => {
   };
 
   const handleContinue = () => {
-    window.location.reload(); // Ricarica la pagina
+    window.location.reload(); 
   };
 
   return (
@@ -70,7 +69,7 @@ const Training = () => {
       ) : (
         <div>
           <h1 className="mb-3">Quale è il tipo di {data.pokemonName} </h1>
-          {data && Object.keys(data).length > 0 && ( // Check if data is not empty
+          {data && Object.keys(data).length > 0 && ( 
             <Row>
               <img src={data.pokemonImage} alt="pro version" className="w-25"/>
               <Col sm="12" lg="12" xl="5" >

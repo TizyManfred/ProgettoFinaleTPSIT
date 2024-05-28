@@ -14,8 +14,7 @@ const Logout = () => {
         window.location.href = '/';
     } catch (error) {
         console.error("Errore durante il logout:", error);
-        // Gestisci l'errore, ad esempio mostrando un messaggio all'utente
-      }
+       }
     };
 
     handleLogout();
@@ -24,7 +23,6 @@ const Logout = () => {
   return (
     <div>
       <p>Stai effettuando il logout...</p>
-      {/* Puoi mostrare qui un loader o un messaggio di attesa */}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap';
-import './Carousel.css'; // Assicurati di creare e importare questo file CSS
+import './Carousel.css';
 
 function Carousel() {
   const [currentSlide, setCurrentSlide] = useState(0);

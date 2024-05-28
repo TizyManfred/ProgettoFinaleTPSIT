@@ -53,7 +53,7 @@ const Pokemon = () => {
     return () => {
       document.removeEventListener('keydown', handleKeyPress);
     };
-  }, [page]); // Aggiunta 'page' come dipendenza per ricaricare l'effetto quando la pagina cambia
+  }, [page]); 
 
   const handleNextPage = () => {
     if (page < MAX_PAGES) {

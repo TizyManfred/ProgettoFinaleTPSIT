@@ -44,7 +44,6 @@ const SignUp = () => {
   const submitHandler = (event) => {
     event.preventDefault();
     if (!Object.keys(errors).length) {
-      // Pushing data to database using Express API
       const urlApi = `http://localhost:50000/api/signup`;
       const pushData = async () => {
         try {

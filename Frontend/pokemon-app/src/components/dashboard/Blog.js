@@ -37,7 +37,7 @@ const Blog = (props) => {
       });
   
       const responseData = await response.json();
-      console.log(responseData); // Log della risposta dal backend
+      console.log(responseData); 
   
       if (!responseData.success) {
         if (responseData.error === "MAX_POKEMON_REACHED") {

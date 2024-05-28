@@ -15,7 +15,7 @@ const SpecialTraining = () => {
   const [data, setData] = useState({});
   const [selectedOption, setSelectedOption] = useState(null);
   const [message, setMessage] = useState(null);
-  const [loading, setLoading] = useState(true); // Aggiungi lo stato per il caricamento
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     axios.get('http://localhost:50000/api/allenamentoSpeciale')
@@ -31,7 +31,7 @@ const SpecialTraining = () => {
         }
       })
       .finally(() => {
-        setLoading(false); // Imposta lo stato di caricamento su false una volta completata la richiesta
+        setLoading(false); 
       });
   }, []);
 
@@ -60,7 +60,7 @@ const SpecialTraining = () => {
   };
 
   const handleContinue = () => {
-    window.location.reload(); // Ricarica la pagina
+    window.location.reload();
   };
 
 
@@ -81,7 +81,7 @@ const SpecialTraining = () => {
       ) : (
         <div>
           <h1 className="mb-3">Quale è il nome del pokemon</h1>
-          {data && Object.keys(data).length > 0 && ( // Check if data is not empty
+          {data && Object.keys(data).length > 0 && ( 
             <Row>
               <img src={data.pokemonImage} alt="pro version" className="w-25"/>
               <Col sm="12" lg="12" xl="5" >
