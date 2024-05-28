@@ -9,7 +9,7 @@ const { getRandomPokemon, getPokemonMovesFromAPI, getEvolutionData, getPokemonDe
 const { connection, getPokemonListFromDB } = require('./database');
 const { getRandomNumber, shuffleArray } = require('./utils');
 const userId=1;
-const crypto = require('crypto'); // modulo crypto per generare una stringa casuale
+const crypto = require('crypto'); 
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
@@ -28,8 +28,8 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
-  origin: 'http://localhost:3000', // Modifica con il dominio del tuo frontend
-  credentials: true // Importante per consentire l'invio dei cookie
+  origin: 'http://localhost:3000', 
+  credentials: true 
 }));
 
 app.use(session({
@@ -39,19 +39,16 @@ app.use(session({
   cookie: {
     path: '/',
     httpOnly: true,
-    secure: false,  // Imposta su true in produzione se usi HTTPS
-    maxAge: 86400000     // Durata della sessione in millisecondi
+    secure: false,  
+    maxAge: 86400000    
   }}));
 
 
-// Il middleware authenticateUser dovrebbe essere configurato dopo il middleware per la gestione delle sessioni
 const authenticateUser = (req, res, next) => {
   
   if (req.session && req.session.userId) {
-    // L'utente è autenticato, procedi all'endpoint successivo
     next();
   } else {
-    // L'utente non è autenticato, reindirizza alla pagina di login o restituisci un errore
     res.status(401).json({ error: 'Unauthorized' });
   }
 };
@@ -233,7 +230,7 @@ app.get('/api/pokemon0',authenticateUser, async (req, res) => {
 // Inserimento pokemon scelto dall'utente
 app.post('/api/pokemon', authenticateUser, async (req, res) => {
   const { pokemonId } = req.query;
-  const MAX_CAPTURED_POKEMON = 20; // Numero massimo di Pokémon catturabili
+  const MAX_CAPTURED_POKEMON = 20; 
   try {
     // Verifica se sono presenti l'ID del Pokémon e dell'utente
     if (!pokemonId) {
@@ -258,10 +255,8 @@ app.post('/api/pokemon', authenticateUser, async (req, res) => {
         return res.status(400).json({ success: false, error: "MAX_POKEMON_REACHED", message: "Hai raggiunto il limite massimo di Pokémon catturabili." });
       }
 
-      // Ottieni i dettagli del Pokémon dall'API
       const pokemonDetails = await getPokemonMovesFromAPI(pokemonId);
 
-      // Inserisci il nuovo Pokémon nel database per l'utente specificato
       const insertQuery = `
         INSERT INTO pokemon (Id, Livello, Shiny, Mossa1, Mossa2, Mossa3, Mossa4, Username_Utente)
         VALUES (?, 1, 0, ?, ?, ?, ?, ?);
@@ -282,50 +277,6 @@ app.post('/api/pokemon', authenticateUser, async (req, res) => {
 });
 
 
-/*
-// Lista pokemon utente
-app.get('/api/pokedex',authenticateUser, async (req, res) => {
-  const query = `SELECT * FROM pokemon WHERE Username_Utente = ?`;
-  
-  connection.query(query, [req.session.userId], async (error, results) => {
-    if (error) {
-      console.error('Errore durante l\'esecuzione della query:', error);
-      res.status(500).json({ error: 'Errore durante l\'esecuzione della query' });
-      return;
-    }
-    const pokemonData = await Promise.all(results.map(async pokemon => {
-      evolution=await getEvolutionData(pokemon.Id);
-      pokemonName=evolution.firstEvolution;
-      if(pokemon.Livello>=16 && evolution.secondEvolution!==null){
-        pokemonName=evolution.secondEvolution;
-      }
-      if(pokemon.Livello>=32 && evolution.thirdEvolution!==null){
-        pokemonName=evolution.thirdEvolution;
-      }
-      
-      let pokemonDetails=await getPokemonDetails(pokemonName);
-
-      const imageUrl = pokemon.Shiny===1 ? pokemonDetails.imageShiny : pokemonDetails.imageUrl;
-      const isShiny = pokemon.Shiny===1 ? "Shiny" : "Not shiny";
-      return {
-        id: pokemonDetails.id,
-        name: pokemonDetails.name,
-        type: pokemonDetails.type,
-        level: pokemon.Livello,
-        imageUrl: imageUrl,
-        ability1: pokemon.Mossa1,
-        ability2:pokemon.Mossa2, 
-        ability3:pokemon.Mossa3, 
-        ability4:pokemon.Mossa4,
-        shiny: isShiny
-      };
-
-    }));
-    // Invia i risultati della query come risposta JSON
-    res.json(pokemonData);
-  });
-});
-*/
 
 app.get('/api/pokedex', authenticateUser, async (req, res) => {
   const query = `SELECT * FROM pokemon WHERE Username_Utente = ?`;
@@ -372,10 +323,8 @@ app.get('/api/pokedex', authenticateUser, async (req, res) => {
       };
     }));
 
-    // Filtra eventuali null (Pokémon non trovati)
     const validPokemonData = pokemonData.filter(pokemon => pokemon !== null);
 
-    // Invia i risultati della query come risposta JSON
     res.json(validPokemonData);
   });
 });
@@ -429,14 +378,14 @@ app.get('/api/allenamento',authenticateUser, async (req, res) => {
     const pokemon = await getRandomPokemon();
     const { name, sprites, types } = pokemon;
 
-    // Estrai il nome e l'URL dell'immagine del Pokemon
+    // Estrae il nome e l'URL dell'immagine del Pokemon
     const pokemonName = name;
     const pokemonImage = sprites.front_default;
 
-    // Estrai il tipo corretto del Pokemon
+    // Estrae il tipo corretto del Pokemon
     const correctType = types[0].type.name;
 
-    // Estrai casualmente altri tipi di Pokemon diversi dal tipo corretto
+    // Estrae casualmente altri tipi di Pokemon diversi dal tipo corretto
     const otherTypes = allTypes.filter(type => type !== correctType);
     const randomTypes = [];
     for (let i = 0; i < 3; i++) {
@@ -445,7 +394,7 @@ app.get('/api/allenamento',authenticateUser, async (req, res) => {
       otherTypes.splice(randomIndex, 1);
     }
 
-    // Aggiungi il tipo corretto e mescola le opzioni di risposta
+    // Aggiunge il tipo corretto e mescola le opzioni di risposta
     const quizOptions = shuffleArray([...randomTypes, correctType]);
 
     // Invia i dati del quiz all'utente, inclusa la risposta corretta
@@ -484,7 +433,7 @@ app.post('/api/allenamento',authenticateUser, async (req, res) => {
           }
           var randomPokemon
           if(results.length>0){
-            randomPokemon = results[0]; // Extract the first row from the results
+            randomPokemon = results[0]; 
           }else{
             return res.json({ success: true, message: 'Nessun pokemon da allenare' });
           }
@@ -566,13 +515,13 @@ app.get('/api/allenamentoSpeciale',authenticateUser, async (req, res) => {
     const pokemons = await getRandomPokemons(4);
     
     
-    // Estrai il nome e l'URL dell'immagine del Pokemon
+    // Estrae il nome e l'URL dell'immagine del Pokemon
     const pokemonImage = pokemons[0].sprites.front_default;
     
-    // Estrai il tipo corretto del Pokemon
+    // Estrae il tipo corretto del Pokemon
     const correctName = pokemons[0].name;
 
-    // Aggiungi il tipo corretto e mescola le opzioni di risposta
+    // Aggiunge il tipo corretto e mescola le opzioni di risposta
     const randomNames = [pokemons[1].name,pokemons[2].name,pokemons[3].name];
 
     const quizOptions = shuffleArray([...randomNames, correctName]);
@@ -598,7 +547,7 @@ app.post('/api/allenamentoSpeciale',authenticateUser, async (req, res) => {
     }
 
     if (answer === correctAnswer) {
-      // Se la risposta è corretta, esegui una query per selezionare un Pokémon casuale
+      // Se la risposta è corretta, esegui una query per selezionare un Pokémon casuale tra quelli non Shiny
       const randomPokemonQuery = `
           SELECT * FROM pokemon
           WHERE Shiny = 0 AND Username_Utente = ?
@@ -612,7 +561,7 @@ app.post('/api/allenamentoSpeciale',authenticateUser, async (req, res) => {
           }
           var randomPokemon
           if(results.length>0){
-            randomPokemon = results[0]; // Extract the first row from the results
+            randomPokemon = results[0];
           }else{
             return res.json({ success: true, message: 'Nessun pokemon da rendere shiny' });
           }
@@ -647,7 +596,7 @@ app.post('/api/allenamentoSpeciale',authenticateUser, async (req, res) => {
           });
       });
   } else {
-      // Restituisci una risposta JSON se la risposta non è corretta
+      // Restituisce una risposta JSON se la risposta non è corretta
       res.json({ success: true, message: 'Risposta errata.' });
   }
   

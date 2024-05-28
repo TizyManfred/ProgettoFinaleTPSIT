@@ -18,7 +18,7 @@ async function getPokemonMovesFromAPI(pokemonId) {
     try {
         const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
         const pokemonMoves = {
-          moves: response.data.moves.map(move => move.move.name) // Ottieni i nomi delle mosse del Pokémon
+          moves: response.data.moves.map(move => move.move.name) 
         };
     
         // Seleziona casualmente 4 mosse tra quelle disponibili
@@ -40,9 +40,7 @@ async function getEvolutionData(basePokemonId) {
         let firstEvolutionData = null;
         let secondEvolutionData = null;
         let thirdEvolutionData = null;
-  
-        // Cerca le evoluzioni nel campo "evolution_chain" del pokemon
-    
+      
         const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${basePokemonId}`);
         const evolutionChainUrl = speciesResponse.data.evolution_chain.url;
   
@@ -113,7 +111,7 @@ async function getEvolutionData(basePokemonId) {
         const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${pokemonName}`);
         const speciesData = speciesResponse.data;
   
-        // Prendi la prima varietà disponibile
+        // Prende la prima varietà disponibile
         const firstVersionUrl = speciesData.varieties[0].pokemon.url;
         const firstVersionResponse = await axios.get(firstVersionUrl);
         const firstVersionData = firstVersionResponse.data;
@@ -139,7 +137,6 @@ async function getEvolutionData(basePokemonId) {
   }
   
 
-// pokemonApi.js
 async function getRandomPokemons(count) {
     const randomPokemons = [];
     try {

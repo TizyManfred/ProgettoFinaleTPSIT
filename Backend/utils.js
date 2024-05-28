@@ -1,4 +1,3 @@
-// utils.js
 function getRandomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -14,7 +13,7 @@ function shuffleArray(array) {
 // Funzione per selezionare casualmente 4 mosse tra quelle disponibili
 function getRandomMoves(moves) {
     const randomMoves = [];
-    const shuffledMoves = moves.sort(() => Math.random() - 0.5); // Mischia l'array di mosse
+    const shuffledMoves = moves.sort(() => Math.random() - 0.5); 
     for (let i = 0; i < 4; i++) {
       randomMoves.push(shuffledMoves[i]);
     }
