@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap';
 import './Carousel.css';
+import gabbo from "../assets/img-carosello/287.png";
+import tizi from "../assets/img-carosello/004.png";
+import sami from "../assets/img-carosello/143.png";
+import max from "../assets/img-carosello/068.png";
 
 function Carousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -48,16 +52,16 @@ function Carousel() {
         </div>
         <div className="carousel-inner">
           <div className="carousel-item active">
-            <img src="https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/287.png" className="d-block w-50 mx-auto" alt="..." />
+            <img src={gabbo} className="d-block w-50 mx-auto" alt="..." />
           </div>
           <div className="carousel-item">
-            <img src="https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/004.png" className="d-block w-50 mx-auto" alt="..." />
+            <img src={tizi} className="d-block w-50 mx-auto" alt="..." />
           </div>
           <div className="carousel-item">
-            <img src="https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/143.png" className="d-block w-50 mx-auto" alt="..." />
+            <img src={sami} className="d-block w-50 mx-auto" alt="..." />
           </div>
           <div className="carousel-item">
-            <img src="https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/068.png" className="d-block w-50 mx-auto" alt="..." />
+            <img src={max} className="d-block w-50 mx-auto" alt="..." />
           </div>
         </div>
         <button className="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
